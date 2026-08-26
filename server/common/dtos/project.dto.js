@@ -1,21 +1,32 @@
+const path = require('path');
+
 const projectDTO = {
-    toResponse: (project) => ({
-        project_id: project.project_id,
-        project_name: project.project_name,
-        description: project.description,
-        entrepreneur_id: project.entrepreneur_id,
-        status: project.status,
-        visibility: project.visibility,
-        field: project.field,
-        budget: project.budget,
-        offer: project.offer,
-        target: project.target,
-        deadline: project.deadline,
-        documents: project.documents,
-        approved: project.approved,
-        createdAt: project.createdAt,
-        updatedAt: project.updatedAt,
-    }),
+    toResponse: (project, isAuthorized = false) => {
+        const cleanDocs = (project.documents || []).map(doc => path.basename(doc));
+        const response = {
+            project_id: project.project_id,
+            project_name: project.project_name,
+            description: project.description,
+            entrepreneur_id: project.entrepreneur_id,
+            status: project.status,
+            visibility: project.visibility,
+            field: project.field,
+            budget: project.budget,
+            offer: project.offer,
+            target: project.target,
+            deadline: project.deadline,
+            approved: project.approved,
+            has_documents: cleanDocs.length > 0,
+            createdAt: project.createdAt,
+            updatedAt: project.updatedAt,
+        };
+
+        if (isAuthorized) {
+            response.documents = cleanDocs;
+        }
+
+        return response;
+    },
     fromRequest: (project) => ({
         project_name: project.project_name,
         description: project.description,
@@ -27,7 +38,7 @@ const projectDTO = {
         offer: project.offer,
         target: project.target,
         deadline: project.deadline,
-        documents: project.documents,
+        documents: (project.documents || []).map(doc => path.basename(doc)),
     })
 }
 

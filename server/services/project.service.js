@@ -112,6 +112,52 @@ const ProjectService = {
    */
   async rejectProject(projectId) {
     return await ProjectDAO.rejectProject(projectId);
+  },
+
+  /**
+   * Checks whether a user is authorized to access a project's pitch deck / documents.
+   * Authorized users: Project owner (Entrepreneur), Platform Admins, or Investors with active proposals / interest.
+   * @param {Object} user - Authenticated user object from req.user
+   * @param {Object} project - Mongoose project document
+   * @returns {Promise<boolean>}
+   */
+  async isAuthorizedForDocuments(user, project) {
+    if (!user || !project) return false;
+
+    // 1. Admin access
+    if (['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+      return true;
+    }
+
+    // 2. Project owner access
+    if (project.entrepreneur_id === user.id) {
+      return true;
+    }
+
+    // 3. Investor access (active/accepted proposal OR expression of interest)
+    if (user.role === 'INVESTOR') {
+      const Proposal = require('../db/models/proposalModel');
+      const Investment = require('../db/models/investmentModel');
+      const { User } = require('../db/models/userModel');
+
+      const proposal = await Proposal.findOne({
+        project_id: project.project_id,
+        investor_id: user.id,
+        status: { $in: ['pending', 'countered', 'accepted'] }
+      });
+      if (proposal) return true;
+
+      const investorUser = await User.findOne({ id: user.id });
+      if (investorUser) {
+        const investment = await Investment.findOne({
+          project_id: project._id,
+          investor_id: investorUser._id
+        });
+        if (investment) return true;
+      }
+    }
+
+    return false;
   }
 };
 

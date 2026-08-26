@@ -127,23 +127,23 @@ export default function PitchFormModal({
             />
           </div>
 
-          {/* Pitch deck document upload (only for creation) */}
-          {!editingPitch && (
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Pitch Deck / Verification Scan (PDF/Doc)</label>
-              <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col items-center justify-center w-full h-20 border border-slate-200 border-dashed rounded-xl cursor-pointer hover:bg-slate-50 transition-all p-3 bg-white">
-                  <div className="flex items-center gap-2">
-                    <Upload className="h-4 w-4 text-slate-400" />
-                    <span className="text-xs text-slate-500 font-medium">
-                      {file ? file.name : "Upload Document"}
-                    </span>
-                  </div>
-                  <input type="file" className="hidden" onChange={handleFileChange} />
-                </label>
-              </div>
+          {/* Pitch deck document upload */}
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
+              {editingPitch ? 'Update Pitch Deck / Verification Scan (PDF/Doc)' : 'Pitch Deck / Verification Scan (PDF/Doc)'}
+            </label>
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-20 border border-slate-200 border-dashed rounded-xl cursor-pointer hover:bg-slate-50 transition-all p-3 bg-white">
+                <div className="flex items-center gap-2">
+                  <Upload className="h-4 w-4 text-slate-400" />
+                  <span className="text-xs text-slate-500 font-medium">
+                    {file ? file.name : (editingPitch && editingPitch.documents?.length > 0 ? `Current: ${editingPitch.documents[0]} (Click to replace)` : "Upload Document")}
+                  </span>
+                </div>
+                <input type="file" className="hidden" onChange={handleFileChange} />
+              </label>
             </div>
-          )}
+          </div>
 
           {/* Submit Action */}
           <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2 bg-white">

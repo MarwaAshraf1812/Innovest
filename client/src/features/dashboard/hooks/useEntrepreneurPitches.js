@@ -94,17 +94,33 @@ export default function useEntrepreneurPitches(currentUser) {
 
     try {
       if (editingPitch) {
-        // Update: PUT request with JSON payload
-        const payload = {
-          project_name: projectName,
-          description: description,
-          field: field,
-          budget: Number(budget),
-          deadline: deadline,
-          offer: offer ? Number(offer) : null,
-          target: target ? Number(target) : null
+        // Update: PUT request (FormData if file attached, JSON otherwise)
+        if (file) {
+          const formData = new FormData()
+          formData.append('project_name', projectName)
+          formData.append('description', description)
+          formData.append('field', field)
+          formData.append('budget', budget)
+          formData.append('deadline', deadline)
+          if (offer) formData.append('offer', offer)
+          if (target) formData.append('target', target)
+          formData.append('documents', file)
+
+          await axios.put(`${API_URL}/project/${editingPitch.project_id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          })
+        } else {
+          const payload = {
+            project_name: projectName,
+            description: description,
+            field: field,
+            budget: Number(budget),
+            deadline: deadline,
+            offer: offer ? Number(offer) : null,
+            target: target ? Number(target) : null
+          }
+          await axios.put(`${API_URL}/project/${editingPitch.project_id}`, payload)
         }
-        await axios.put(`${API_URL}/project/${editingPitch.project_id}`, payload)
         setSuccess('Pitch updated successfully!')
       } else {
         // Create: POST request with FormData

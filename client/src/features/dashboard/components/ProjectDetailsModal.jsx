@@ -1,6 +1,9 @@
 import React from 'react'
 import { X } from 'lucide-react'
 import Button from '../../../components/ui/Button'
+import ProposalThread from './ProposalThread'
+
+import { API_URL } from '../../../config/api'
 
 export default function ProjectDetailsModal({ project, onClose }) {
   const progress = project.target && project.offer ? Math.min(Math.round((project.offer / project.target) * 100), 100) : 0
@@ -86,7 +89,7 @@ export default function ProjectDetailsModal({ project, onClose }) {
                 {project.documents.map((doc, idx) => (
                   <a
                     key={idx}
-                    href={`http://localhost:8000/${doc}`}
+                    href={`${API_URL}/project/${project.project_id}/documents/${doc.split('/').pop()}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition-colors"
@@ -98,6 +101,12 @@ export default function ProjectDetailsModal({ project, onClose }) {
               </div>
             </div>
           )}
+
+          {/* Proposal & Counter-Offer Negotiation Section */}
+          <div className="space-y-2 pt-2 border-t border-slate-100">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Negotiation & Proposals</h4>
+            <ProposalThread projectId={project.project_id} />
+          </div>
         </div>
 
         {/* Modal Footer */}
