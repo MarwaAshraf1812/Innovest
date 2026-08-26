@@ -66,17 +66,22 @@ export function AuthProvider({ children }) {
         const status = err.response?.status
         const msg = err.response?.data?.message || ''
         
-        if (status === 404 || msg.toLowerCase().includes('not found')) {
+        if (status === 404 || status === 400 || msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('invalid credentials')) {
           console.log('User not found in regular users database. Trying Admin login path...')
-          const adminRes = await axios.post(`${API_URL}/admin/login`, {
-            username_or_email: usernameOrEmail,
-            password: password
-          })
-          if (adminRes.data && adminRes.data.user) {
-            const adminData = adminRes.data.user
-            setCurrentUser(adminData)
-            localStorage.setItem('innovest_user', JSON.stringify(adminData))
-            return adminData
+          try {
+            const adminRes = await axios.post(`${API_URL}/admin/login`, {
+              username_or_email: usernameOrEmail,
+              password: password
+            })
+            if (adminRes.data && adminRes.data.user) {
+              const adminData = adminRes.data.user
+              setCurrentUser(adminData)
+              localStorage.setItem('innovest_user', JSON.stringify(adminData))
+              return adminData
+            }
+          } catch (adminErr) {
+            // Admin login also failed, throw uniform error
+            throw err
           }
         }
         

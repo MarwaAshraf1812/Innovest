@@ -1,7 +1,7 @@
 import React from 'react'
 import { ArrowRight, Sparkles, ShieldCheck, Check, Layers, UserCheck, Activity } from 'lucide-react'
 
-export default function Hero({ onNavigate }) {
+export default function Hero({ onNavigate, currentUser }) {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-28 pb-20 border-b border-slate-100 bg-[#f8fafc] bg-[linear-gradient(to_right,#f1f5f9_1.5px,transparent_1.5px),linear-gradient(to_bottom,#f1f5f9_1.5px,transparent_1.5px)] bg-[size:6rem_6rem]">
       
@@ -39,7 +39,7 @@ export default function Hero({ onNavigate }) {
             {/* CTA Pill Buttons */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
               <button 
-                onClick={() => onNavigate('explore')}
+                onClick={() => currentUser ? onNavigate('explore') : onNavigate('login')}
                 className="bg-primary-600 hover:bg-primary-700 text-white rounded-full px-7 py-3.5 font-bold hover:shadow-lg hover:shadow-primary-600/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95 text-sm"
               >
                 Explore Active Pitches
@@ -47,7 +47,7 @@ export default function Hero({ onNavigate }) {
               </button>
               
               <button 
-                onClick={() => onNavigate('register')}
+                onClick={() => currentUser ? onNavigate('dashboard') : onNavigate('register')}
                 className="bg-white border border-slate-200 text-slate-800 rounded-full px-7 py-3.5 font-bold hover:bg-slate-50 shadow-md shadow-slate-100 flex items-center justify-center gap-2 cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95 text-sm"
               >
                 Pitch Your Vision

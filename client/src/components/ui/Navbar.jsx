@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Menu, X, Shield } from 'lucide-react'
+import { Menu, X, LayoutDashboard } from 'lucide-react'
 import Button from './Button'
 
 export default function Navbar({
@@ -18,6 +18,10 @@ export default function Navbar({
   ]
 
   const handleLinkClick = (id) => {
+    if (currentUser) {
+      onNavigate?.('dashboard')
+      return
+    }
     if (activePage === 'home') {
       const element = document.getElementById(id)
       if (element) {
@@ -42,7 +46,7 @@ export default function Navbar({
       <div className="max-w-7xl mx-auto bg-white/70 backdrop-blur-md border border-slate-200/40 rounded-full shadow-lg shadow-slate-200/5 px-6 py-2.5 flex items-center justify-between pointer-events-auto">
         
         {/* Logo */}
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => handleLinkClick('home')}>
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => currentUser ? onNavigate?.('dashboard') : handleLinkClick('home')}>
           <svg className="h-7 w-7 text-primary-600" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="35" cy="50" r="18" stroke="currentColor" strokeWidth="8" />
             <circle cx="65" cy="50" r="18" stroke="currentColor" strokeWidth="8" />
@@ -71,11 +75,11 @@ export default function Navbar({
           {currentUser ? (
             <div className="flex items-center gap-3">
               <button 
-                onClick={() => onNavigate('dashboard')}
-                className="h-9 w-9 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:border-slate-350 transition-all cursor-pointer"
-                title="Dashboard"
+                onClick={() => onNavigate?.('dashboard')}
+                className="bg-primary-600 hover:bg-primary-700 text-white rounded-full px-4 py-2 font-bold text-xs cursor-pointer transition-all flex items-center gap-1.5 shadow-sm shadow-primary-600/20 hover:-translate-y-0.5 border-none"
               >
-                <Shield className="h-4.5 w-4.5" />
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
               </button>
               <div className="text-right leading-none">
                 <p className="text-xs font-bold text-slate-800">{currentUser.username}</p>
@@ -83,7 +87,7 @@ export default function Navbar({
               </div>
               <button 
                 onClick={onLogout}
-                className="text-sm font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-full hover:bg-slate-50 cursor-pointer transition-all"
+                className="text-sm font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-full hover:bg-slate-50 cursor-pointer transition-all border-none bg-transparent"
               >
                 Logout
               </button>

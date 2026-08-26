@@ -21,6 +21,10 @@ export default function AppRoutes() {
   const navigate = useNavigate()
 
   const handleNavigate = (pageId) => {
+    if (!currentUser && ['explore', 'communities', 'proposals', 'dashboard'].includes(pageId)) {
+      navigate('/login')
+      return
+    }
     switch (pageId) {
       case 'home':
         navigate('/')
@@ -64,7 +68,16 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />} />
+      <Route
+        path="/"
+        element={
+          currentUser ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <LandingPage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />
+          )
+        }
+      />
       <Route
         path="/login"
         element={
@@ -85,9 +98,36 @@ export default function AppRoutes() {
           )
         }
       />
-      <Route path="/explore" element={<ExplorePage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />} />
-      <Route path="/communities" element={<CommunitiesPage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />} />
-      <Route path="/proposals" element={<ProposalsPage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />} />
+      <Route
+        path="/explore"
+        element={
+          currentUser ? (
+            <ExplorePage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/communities"
+        element={
+          currentUser ? (
+            <CommunitiesPage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/proposals"
+        element={
+          currentUser ? (
+            <ProposalsPage onNavigate={handleNavigate} currentUser={currentUser} onLogout={logout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
       <Route
         path="/dashboard"
         element={

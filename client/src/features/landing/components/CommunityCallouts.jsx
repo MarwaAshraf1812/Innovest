@@ -2,7 +2,7 @@ import React from 'react'
 import { ArrowRight } from 'lucide-react'
 import Card from '../../../components/ui/Card'
 
-export default function CommunityCallouts({ onNavigate }) {
+export default function CommunityCallouts({ onNavigate, currentUser }) {
   return (
     <section className="py-20 border-b border-slate-100 bg-slate-50/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -26,7 +26,7 @@ export default function CommunityCallouts({ onNavigate }) {
                 <h3 className="font-bold text-slate-900 text-base">{hub.title}</h3>
                 <p className="text-slate-600 text-xs leading-relaxed">{hub.desc}</p>
                 <button 
-                  onClick={() => onNavigate(hub.id)}
+                  onClick={() => currentUser ? onNavigate(hub.id) : onNavigate(hub.id === 'register' ? 'register' : 'login')}
                   className="text-xs font-semibold text-primary-600 hover:text-primary-700 inline-flex items-center gap-1.5 pt-2 cursor-pointer bg-transparent border-none p-0"
                 >
                   {hub.action}

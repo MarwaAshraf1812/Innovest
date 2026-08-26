@@ -167,15 +167,47 @@ npm run dev
 
 ## 🔗 Key API Reference
 
-| Method | Endpoint | Description | Access Control |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/register` | User/Admin Registration | Public |
-| **POST** | `/api/login` | User/Admin Authentication | Public |
-| **GET** | `/api/pending-users` | Users awaiting registration | Admins Only |
-| **POST** | `/api/community` | Create a new community group | Admins Only |
-| **POST** | `/api/community/:id/join`| Join a community | Approved Members |
-| **POST** | `/api/events` | Create platform-wide alert event | Super Admin / Admin |
-| **POST** | `/api/comment/:id` | Add comments on posts | Registered Users |
+### 🔐 Auth & User Management (`/api/user`)
+| Method | Endpoint | Description | Access Control | Security / Validation |
+| :--- | :--- | :--- | :--- | :--- |
+| **POST** | `/api/user/register` | Register new user account | Public | Joi Validated + Rate Limited (10/15m) |
+| **POST** | `/api/user/login` | Authenticate user session | Public | Joi Validated + Rate Limited (10/15m) |
+| **POST** | `/api/user/refresh-token` | Issue new access token | Public (Cookie) | Validates HTTP-only Refresh Token |
+| **GET** | `/api/user/logout` | Terminate session & clear cookies | Authenticated | Clears Access & Refresh Cookies |
+| **GET** | `/api/user/verify` | Verify current session state | Authenticated | JWT Cookie / Header Check |
+| **GET** | `/api/user/pending-users` | Fetch users awaiting admin approval | Admins Only | RBAC Check |
+| **PUT** | `/api/user/approve-user/:user_id` | Approve user registration | Admins Only | RBAC Check + Email Notification |
+| **PUT** | `/api/user/reject-user/:user_id` | Reject user registration | Admins Only | RBAC Check |
+| **GET** | `/api/user/investors` | List all verified platform investors | Authenticated | Role Check |
+| **GET** | `/api/user/me/stats` | Get user dashboard metrics | Authenticated | User Scoped |
+| **PUT** | `/api/user/:id` | Update user profile | Owner / Admin | Joi Validated + Permission Check |
+
+### 🛡️ Admin Operations (`/api/admin`)
+| Method | Endpoint | Description | Access Control | Security / Validation |
+| :--- | :--- | :--- | :--- | :--- |
+| **POST** | `/api/admin/register` | Register new admin account | Public | Joi Validated + Rate Limited (10/15m) |
+| **POST** | `/api/admin/login` | Authenticate admin | Public | Joi Validated + Rate Limited (10/15m) |
+| **POST** | `/api/admin` | Create admin user | Super Admin | Joi Validated |
+| **GET** | `/api/admin` | List all system admins | Admin / Super Admin | RBAC Check |
+
+### 💼 Projects & Proposals (`/api/projects`)
+| Method | Endpoint | Description | Access Control | Security / Validation |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/api/projects` | List all published projects | Authenticated | JWT Guarded |
+| **POST** | `/api/projects` | Create a new investment project | Entrepreneur | Joi Validated Payload |
+| **PUT** | `/api/projects/:project_id` | Update project details | Project Owner | Joi Validated Payload |
+| **GET** | `/api/projects/status/under-review` | View pending projects | Admin / Super Admin | Moderation Queue |
+| **PUT** | `/api/projects/approve/:project_id` | Approve pending project | Admin / Super Admin | Admin Workflow |
+| **POST** | `/api/projects/:project_id/interest` | Express investment interest | Investor | Investor Role Guard |
+
+### 💬 Community & Direct Messaging (`/api/community`, `/api/messages`)
+| Method | Endpoint | Description | Access Control | Security / Validation |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/api/community` | List all active communities | Authenticated | JWT Guarded |
+| **POST** | `/api/community` | Create a community | Admin / Super Admin | Joi Validated |
+| **GET** | `/api/messages/contacts` | Get user message contacts | Authenticated | User Scoped |
+| **GET** | `/api/messages/conversation/:user_id` | Load chat history | Authenticated | DM Security |
+| **POST** | `/api/messages` | Send direct message | Authenticated | Joi Validated |
 
 ---
 

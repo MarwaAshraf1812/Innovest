@@ -23,13 +23,13 @@ export default function LandingPage({ onNavigate, currentUser, onLogout }) {
       />
 
       <main>
-        <Hero onNavigate={onNavigate} />
+        <Hero onNavigate={onNavigate} currentUser={currentUser} />
         <Stats />
-        <ExclusiveNetwork onNavigate={onNavigate} />
+        <ExclusiveNetwork onNavigate={onNavigate} currentUser={currentUser} />
         <Services id="features" />
         <HowItWorks id="how-it-works" />
         <Testimonials id="testimonials" />
-        <CommunityCallouts onNavigate={onNavigate} />
+        <CommunityCallouts onNavigate={onNavigate} currentUser={currentUser} />
         <Faq id="faq" />
       </main>
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { CheckCircle2, ShieldCheck, HelpCircle, Users2, Landmark } from 'lucide-react'
 
-export default function ExclusiveNetwork({ onNavigate }) {
+export default function ExclusiveNetwork({ onNavigate, currentUser }) {
   return (
     <section className="py-24 border-b border-slate-100 bg-gradient-to-b from-white to-[#f8fafc] relative overflow-hidden">
       
@@ -48,14 +48,14 @@ export default function ExclusiveNetwork({ onNavigate }) {
             {/* Buttons */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
               <button 
-                onClick={() => onNavigate('register')}
+                onClick={() => currentUser ? onNavigate('communities') : onNavigate('register')}
                 className="bg-primary-600 hover:bg-primary-700 text-white rounded-full px-6 py-3 font-bold hover:shadow-lg hover:shadow-primary-600/15 cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95 text-sm"
               >
                 Join our Community
               </button>
               
               <button 
-                onClick={() => onNavigate('explore')}
+                onClick={() => currentUser ? onNavigate('explore') : onNavigate('login')}
                 className="bg-white border border-slate-200 text-slate-800 rounded-full px-6 py-3 font-bold hover:bg-slate-50 shadow-md shadow-slate-100 cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95 text-sm"
               >
                 Discover Projects

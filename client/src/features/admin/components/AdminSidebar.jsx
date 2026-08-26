@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { API_URL } from '../../../config/api'
 import useAuthRole from '../hooks/useAuthRole'
+import { LogoIcon } from '../../../components/shared/Logo'
 
 const MENU = {
   ADMIN: [
@@ -101,9 +102,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, currentUser, sid
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
             {/* Logo mark */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
-              <TrendingUp className="h-4 w-4 text-white" strokeWidth={2.5} />
-            </div>
+            <LogoIcon className="h-8 w-8 text-primary-600 shrink-0" />
             <div className="leading-none">
               <p className="text-sm font-extrabold text-slate-900 tracking-tight">Innovest</p>
               <p className="text-[10px] font-bold text-primary-600 uppercase tracking-widest mt-0.5">
