@@ -1,13 +1,53 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { X } from 'lucide-react'
+import axios from 'axios'
 import Button from '../../../components/ui/Button'
 import ProposalThread from './ProposalThread'
 
 import { API_URL } from '../../../config/api'
 
 export default function ProjectDetailsModal({ project, onClose }) {
+  const [downloadingDoc, setDownloadingDoc] = useState(null)
   const progress = project.target && project.offer ? Math.min(Math.round((project.offer / project.target) * 100), 100) : 0
   const isFullyFunded = progress >= 100
+
+  const handleDownloadDocument = async (filename) => {
+    try {
+      setDownloadingDoc(filename)
+      const storedUser = localStorage.getItem('innovest_user')
+      let token = ''
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser)
+          token = parsed.token || ''
+        } catch (e) {}
+      }
+
+      const response = await axios.get(
+        `${API_URL}/project/${project.project_id}/documents/${filename}`,
+        {
+          responseType: 'blob',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          withCredentials: true
+        }
+      )
+
+      const blob = new Blob([response.data])
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (err) {
+      console.error('Failed to download document:', err)
+      alert(err.response?.data?.message || 'Failed to download document. Please ensure you have permission.')
+    } finally {
+      setDownloadingDoc(null)
+    }
+  }
 
   // Status badge classes
   const isApproved = project.approved === 'approved'
@@ -86,18 +126,33 @@ export default function ProjectDetailsModal({ project, onClose }) {
             <div className="space-y-2">
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Documents & Materials</h4>
               <div className="space-y-2">
-                {project.documents.map((doc, idx) => (
-                  <a
-                    key={idx}
-                    href={`${API_URL}/project/${project.project_id}/documents/${doc.split('/').pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition-colors"
-                  >
-                    <span className="truncate">{doc.split('/').pop()}</span>
-                    <span className="text-primary-600 hover:underline">View Document</span>
-                  </a>
-                ))}
+                {project.documents.map((doc, idx) => {
+                  const filename = doc.split('/').pop()
+                  const isDownloading = downloadingDoc === filename
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition-colors"
+                    >
+                      <span className="truncate max-w-[280px] text-slate-800">{filename}</span>
+                      <button
+                        type="button"
+                        disabled={isDownloading}
+                        onClick={() => handleDownloadDocument(filename)}
+                        className="text-primary-600 hover:text-primary-700 font-bold hover:underline cursor-pointer border-none bg-transparent flex items-center gap-1.5 disabled:opacity-50"
+                      >
+                        {isDownloading ? (
+                          <>
+                            <span className="h-3 w-3 border-2 border-primary-600 border-t-transparent rounded-full animate-spin inline-block" />
+                            <span>Downloading...</span>
+                          </>
+                        ) : (
+                          <span>Download Document</span>
+                        )}
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}

@@ -2,10 +2,18 @@ const jwt = require('jsonwebtoken');
 
 const AuthMiddleware = () => {
     return (req, res, next) => {
-        const token = req.cookies.token;
-
         if (req.path === '/forgot-password') {
             return next();
+        }
+
+        let token = req.cookies?.token;
+
+        if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+            token = req.headers.authorization.split(' ')[1];
+        }
+
+        if (!token && req.query && req.query.token) {
+            token = req.query.token;
         }
 
         if (!token) {
