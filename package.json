@@ -4,7 +4,7 @@
   "description": "Innovest - A secure, modular, and real-time platform connecting entrepreneurs and investors.",
   "scripts": {
     "install-all": "npm install && npm install --prefix client && npm install --prefix server",
-    "build": "npm run build --prefix client",
+    "build": "npm install --prefix client && npm run build --prefix client",
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run start --prefix server",
     "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
