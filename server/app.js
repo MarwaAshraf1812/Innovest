@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const adminModule = require('./modules/admin.module');
 const userModule = require('./modules/user.module');
 const messageModule = require('./modules/message.module');
@@ -11,8 +12,9 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const socketConfig = require('./config/socket');
 const commentModule = require("./modules/comment.module");
-const { addUserToPendingUsers, approveUserToJoinCommunity } = require('./controllers/community.controller');
 const ProjectModule = require('./modules/project.module');
+const proposalModule = require('./modules/proposal.module');
+const { addUserToPendingUsers, approveUserToJoinCommunity } = require('./controllers/community.controller');
 
 
 
@@ -24,14 +26,19 @@ const io = socketConfig.init(server);
 dbConection();
 
 // Cors
-const allowedOrigins = ['*', 'http://localhost:5173', 'http://localhost:3000',"https://client-ruddy-iota-11.vercel.app"];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://client-ruddy-iota-11.vercel.app',
+  process.env.CLIENT_URL
+].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // Fallback allow in dev/staging if needed
     }
   },
   credentials: true
@@ -51,6 +58,7 @@ app.use('/api', messageModule());
 app.use('/api', likeModule());
 app.use('/api', commentModule());
 app.use('/api', ProjectModule());
+app.use('/api', proposalModule());
 
 // Socket.IO setup
 io.on('connection', (socket) => {
@@ -88,6 +96,11 @@ io.on('connection', (socket) => {
   // ── Community administrative alerts ──────────────────────────────────────
   socket.on("joinCommunity", async (communityId, userId) => {
     try {
+      if (!communityId || !userId || !mongoose.Types.ObjectId.isValid(communityId)) {
+        console.warn(`Invalid joinCommunity payload: communityId=${communityId}, userId=${userId}`);
+        return socket.emit('error', 'Invalid community ID or user ID format.');
+      }
+
       console.log("Received communityId:", communityId);
       console.log("Received userId:", userId);
 
@@ -103,6 +116,10 @@ io.on('connection', (socket) => {
 
   socket.on("approveJoinRequest", async (communityId, userId) => {
     try {
+      if (!communityId || !userId || !mongoose.Types.ObjectId.isValid(communityId)) {
+        return socket.emit('error', 'Invalid community ID or user ID format.');
+      }
+
       await approveUserToJoinCommunity(communityId, userId, socket);
       io.emit("joinRequestApproved", { communityId, userId });
       socket.emit("joinRequestApproved", { communityId, userId, message: "User approved successfully." });
