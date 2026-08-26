@@ -21,9 +21,21 @@ const ProjectService = {
    * @throws {Error} If the project couldn't be found
    */
   async updateProject(projectId, updateData) {
+    const FileManagement = require('./file_management.service');
+    const path = require('path');
+    const existingProject = await ProjectDAO.getProjectById(projectId);
     const project = await ProjectDAO.updateProject(projectId, updateData);
     if (!project) {
       throw new Error('Project not found');
+    }
+    if (existingProject && existingProject.documents && updateData.documents) {
+      const newDocs = new Set(updateData.documents.map(d => path.basename(d)));
+      for (const oldDoc of existingProject.documents) {
+        const cleanOld = path.basename(oldDoc);
+        if (!newDocs.has(cleanOld)) {
+          await FileManagement.delete_file(cleanOld);
+        }
+      }
     }
     return project;
   },
@@ -35,9 +47,15 @@ const ProjectService = {
    * @throws {Error} If the project couldn't be found.
    */
   async deleteProject(projectId) {
+    const FileManagement = require('./file_management.service');
     const project = await ProjectDAO.deleteProject(projectId);
     if (!project) {
       throw new Error('Project not found');
+    }
+    if (project.documents && project.documents.length > 0) {
+      for (const doc of project.documents) {
+        await FileManagement.delete_file(doc);
+      }
     }
     return project;
   },
