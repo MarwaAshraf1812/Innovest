@@ -2,6 +2,8 @@ const express = require('express');
 const ProjectController = require('../controllers/project.controller');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
+const validatePayload = require('../middlewares/validatePayload.middleware');
+const { projectValidationSchema, projectUpdateValidationSchema } = require('../db/validators/projectValidator');
 var multer = require('multer');
 const router = express.Router();
 
@@ -17,17 +19,25 @@ router.get('/fields',
 router.post('/',
   multParse.any(), 
   AuthMiddleware(),
+  validatePayload(projectValidationSchema),
   ProjectController.addProject);
 
 // Update a project
 router.put('/:project_id',
+  multParse.any(),
   AuthMiddleware(),
+  validatePayload(projectUpdateValidationSchema),
   ProjectController.updateProject);
 
 // Delete a project
 router.delete('/:project_id',
   AuthMiddleware(),
   ProjectController.deleteProject);
+
+// Download project document (protected controller-gated endpoint)
+router.get('/:project_id/documents/:filename',
+  AuthMiddleware(),
+  ProjectController.downloadProjectDocument);
 
 // Get all projects
 router.get('/',
@@ -73,6 +83,5 @@ router.post('/:project_id/interest',
   AuthMiddleware(),
   checkRole(['INVESTOR']),
   ProjectController.expressInterest);
-
 
 module.exports = router;

@@ -5,42 +5,31 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
+const crypto = require('crypto');
 const { getIo } = require('../config/socket');
 
-
+const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 class UserServices {
-    /**
-     * Registers a new user with the given information and list of documents.
-     * Checks if any of the document names already exist to avoid overwriting.
-     * Saves the given documents and saves the documents paths to the user.
-     * Set the user as not verified initially.
-     * @param {Object} user - The user object to be created.
-     * @param {Array} documents - The list of documents to be saved.
-     * @returns {Promise<string>} - The JWT token for the newly created user.
-     * @throws {Error} If the user creation fails or if any document name already exists.
-     */
-    async register(user, documents) {
-        console.log(user)
-        // check if any file name is already exist to avoid over writing
-        for (const document of documents) {
-            if (FileManagement.check_if_file_exist(document.originalname)) {
-                throw new Error('File already exists with the same name');
-            }
-        }
-        // save the given documents 
+    async register(user, documents = []) {
+        console.log(user);
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(user.password, salt);
         user.password = hashedPassword;
+        
         const documents_directories = [];
-        for (const document of documents) {
-            try {
-                documents_directories.push(FileManagement.save_file(document));
-            } catch (error) {
-                throw new Error('Error saving file: ' + error.message);
+        if (documents && documents.length > 0) {
+            for (const document of documents) {
+                try {
+                    const savedPath = await FileManagement.save_file(document);
+                    documents_directories.push(savedPath);
+                } catch (error) {
+                    throw new Error('Error saving file: ' + error.message);
+                }
             }
         }
-        // Save document paths to user
+
         user.id_documents = documents_directories;
         user.is_verified = false;
         try {
@@ -56,23 +45,22 @@ class UserServices {
                 }
             };
             getIo().emit('new_user_registered', savedUser);
+            const refreshSecret = process.env.REFRESH_TOKEN_SECRET || (process.env.JWT_SECRET_KEY + '_refresh');
             const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-            return token;
+            const refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '7d' });
+
+            // Store hashed refresh token in database
+            await userDao.updateUser(savedUser.id, { refresh_token: hashToken(refreshToken) });
+
+            return { token, refreshToken };
         } catch (error) {
-            // delete the saved files if the user creation failed
-            for (const document of documents) {
-                FileManagement.delete_file(document.originalname);
+            for (const filePath of documents_directories) {
+                await FileManagement.delete_file(filePath);
             }
-            throw new Error('Error creating user: ' + error.message)
+            throw new Error('Error creating user: ' + error.message);
         }
     }
-    /**
-     * Logs in an existing user with the given username or email and password.
-     * @param {string} username_or_email - The username or email of the user.
-     * @param {string} password - The password of the user.
-     * @returns {Promise<string>} - The JWT token for the user.
-     * @throws {Error} If the user does not exist, if the password is invalid, or if the user is not verified.
-     */
+
     async login(username_or_email, password) {
         if (!username_or_email || !password) {
             throw new Error('Username/email or password is missing');
@@ -82,15 +70,14 @@ class UserServices {
             await userDao.getUserByUsername(username_or_email);
 
         if (!user) {
-            throw new Error('User not found');
+            throw new Error('Invalid credentials');
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            throw new Error('Invalid password');
+            throw new Error('Invalid credentials');
         }
 
-        // Check if the user is verified
         if (!user.is_verified) {
             throw new Error('Your account is pending approval. Please wait for admin verification.');
         }
@@ -102,8 +89,54 @@ class UserServices {
                 permissions: user.permissions
             }
         };
+        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || (process.env.JWT_SECRET_KEY + '_refresh');
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-        return token;
+        const refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '7d' });
+
+        // Store hashed refresh token in database
+        await userDao.updateUser(user.id, { refresh_token: hashToken(refreshToken) });
+
+        return { token, refreshToken };
+    }
+
+    async refreshAccessToken(refreshToken) {
+        if (!refreshToken) {
+            throw new Error('Refresh token is required');
+        }
+        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || (process.env.JWT_SECRET_KEY + '_refresh');
+        try {
+            const decoded = jwt.verify(refreshToken, refreshSecret);
+            const user = await userDao.getUserById(decoded.user.id);
+
+            // Server-side revocation check: Ensure user exists and stored hash matches incoming token hash
+            if (!user || !user.refresh_token || user.refresh_token !== hashToken(refreshToken)) {
+                throw new Error('Invalid or revoked refresh token');
+            }
+
+            const payload = {
+                user: {
+                    id: user.id,
+                    role: user.role,
+                    national_id: user.national_id,
+                    permissions: user.permissions
+                }
+            };
+            const newToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+            const newRefreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '7d' });
+
+            // Rotate refresh token: Update database with hash of new refresh token
+            await userDao.updateUser(user.id, { refresh_token: hashToken(newRefreshToken) });
+
+            return { token: newToken, refreshToken: newRefreshToken };
+        } catch (error) {
+            throw new Error('Invalid or expired refresh token');
+        }
+    }
+
+    async revokeRefreshToken(userId) {
+        if (userId) {
+            await userDao.updateUser(userId, { refresh_token: null });
+        }
     }
 
     /**

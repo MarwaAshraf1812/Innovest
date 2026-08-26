@@ -1,52 +1,50 @@
 const mongoose = require('mongoose');
-const Notification = require('../db/models/notificationModel'); // Replace with the correct path to your notification model
+const Notification = require('../db/models/notificationModel');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 describe('Notification Model Test', () => {
   let mongoServer;
-  let connection;
 
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
 
-    connection = await mongoose.connect(uri, {
+    await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
   });
 
   afterAll(async () => {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
+    await mongoose.disconnect();
     await mongoServer.stop();
   });
 
-  afterEach(async () => {
-    // Clear the database after each test
+  beforeEach(async () => {
     await Notification.deleteMany({});
   });
 
   it('should insert a notification into the collection', async () => {
     const mockNotification = {
-      content: 'Your investment has been approved.',
+      user_id: 'user_123',
       type: 'Investment Update',
-      read_status: false,
-      user_id: new mongoose.Types.ObjectId(), // Replace with a valid user ObjectId if necessary
+      data: { content: 'Your investment has been approved.' },
+      read: false,
     };
 
     await Notification.create(mockNotification);
-    const insertedNotification = await Notification.findOne({ content: 'Your investment has been approved.' });
+    const insertedNotification = await Notification.findOne({ type: 'Investment Update' });
 
     expect(insertedNotification).toBeDefined();
     expect(insertedNotification.type).toBe(mockNotification.type);
-    expect(insertedNotification.read_status).toBe(mockNotification.read_status);
+    expect(insertedNotification.read).toBe(mockNotification.read);
+    expect(insertedNotification.data.content).toBe(mockNotification.data.content);
   });
 
   it('should not save a notification without required fields', async () => {
     const mockNotification = {
-      type: 'Investment Update',
-      read_status: false,
+      data: { content: 'Test content' },
+      read: false,
     };
 
     let error = null;
@@ -56,8 +54,9 @@ describe('Notification Model Test', () => {
       error = err;
     }
 
-    expect(error).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(error.errors.content).toBeDefined();
+    expect(error).toBeDefined();
+    expect(error.name).toBe('ValidationError');
+    expect(error.errors.type).toBeDefined();
     expect(error.errors.user_id).toBeDefined();
   });
 });

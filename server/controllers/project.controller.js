@@ -21,26 +21,28 @@ const ProjectController = {
       }
 
       const uploadedPaths = [];
-      for (const file of req.files) {
+      if (req.files && req.files.length > 0) {
+        for (const file of req.files) {
           const filePath = await FileManagement.save_file(file);
           uploadedPaths.push(filePath);
+        }
       }
 
       const projectData = ProjectDTO.fromRequest({
-      project_name,
-      description,
-      entrepreneur_id: userId,
-      field,
-      budget,
-      deadline,
-      status: 'under review',
-      visibility: false,
-      offer: req.body.offer || null,
-      target: req.body.target || null,
-      documents: uploadedPaths || [],
-    });
+        project_name,
+        description,
+        entrepreneur_id: userId,
+        field,
+        budget,
+        deadline,
+        status: 'under review',
+        visibility: false,
+        offer: req.body.offer || null,
+        target: req.body.target || null,
+        documents: uploadedPaths || [],
+      });
       const project = await ProjectService.createProject(projectData);
-      return res.status(201).json(ProjectDTO.toResponse(project));
+      return res.status(201).json(ProjectDTO.toResponse(project, true));
     } catch (error) {
       return res.status(400).json({ message: error.message });
     }
@@ -56,13 +58,25 @@ const ProjectController = {
   async updateProject(req, res) {
     try {
       const { project_id } = req.params;
-      const updateData = req.body;
+      const updateData = { ...req.body };
+      delete updateData.entrepreneur_id;
+
+      if (req.files && req.files.length > 0) {
+        const uploadedPaths = [];
+        for (const file of req.files) {
+          const filePath = await FileManagement.save_file(file);
+          uploadedPaths.push(filePath);
+        }
+        updateData.documents = uploadedPaths;
+      }
+
       const project = await ProjectService.updateProject(project_id, updateData);
       if (!project) {
         return res.status(404).json({ message: 'Project not found' });
       }
-  
-      return res.status(200).json(ProjectDTO.toResponse(project));
+
+      const isAuth = await ProjectService.isAuthorizedForDocuments(req.user, project);
+      return res.status(200).json(ProjectDTO.toResponse(project, isAuth));
     } catch (error) {
       return res.status(400).json({ message: error.message });
     }
@@ -89,6 +103,43 @@ const ProjectController = {
   },
 
   /**
+   * Protected endpoint for downloading a project document
+   */
+  async downloadProjectDocument(req, res) {
+    try {
+      const { project_id, filename } = req.params;
+      const path = require('path');
+      const project = await ProjectService.getProjectById(project_id);
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+
+      const isAuth = await ProjectService.isAuthorizedForDocuments(req.user, project);
+      if (!isAuth) {
+        return res.status(403).json({ message: 'Unauthorized access to project documents' });
+      }
+
+      const cleanRequestedName = path.basename(filename);
+      const projectDocNames = (project.documents || []).map(doc => path.basename(doc));
+
+      if (projectDocNames.length > 0 && !projectDocNames.includes(cleanRequestedName)) {
+        return res.status(404).json({ message: 'Document not found in project' });
+      }
+
+      const exists = await FileManagement.check_if_file_exist(cleanRequestedName);
+      if (!exists) {
+        return res.status(404).json({ message: 'File not found on server' });
+      }
+
+      const filePath = FileManagement.resolve_file_path(cleanRequestedName);
+      return res.sendFile(filePath);
+    } catch (error) {
+      console.error('Error in downloadProjectDocument:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+
+  /**
    * Retrieves a project by its ID.
    * @param {Object} req - The HTTP request object.
    * @param {Object} res - The HTTP response object.
@@ -102,7 +153,8 @@ const ProjectController = {
       if (!project) {
         return res.status(404).json({ message: 'Project not found' });
       }
-      return res.status(200).json(ProjectDTO.toResponse(project));
+      const isAuth = await ProjectService.isAuthorizedForDocuments(req.user, project);
+      return res.status(200).json(ProjectDTO.toResponse(project, isAuth));
     } catch (error) {
       console.error('Error in getProject:', error);
       return res.status(500).json({ message: 'Internal server error' });
@@ -125,9 +177,16 @@ const ProjectController = {
         return res.status(404).json({ message: 'No projects found' });
       }
       
+      const formattedProjects = await Promise.all(
+        result.projects.map(async (p) => {
+          const isAuth = await ProjectService.isAuthorizedForDocuments(req.user, p);
+          return ProjectDTO.toResponse(p, isAuth);
+        })
+      );
+
       return res.status(200).json({
         ...result,
-        projects: result.projects.map(ProjectDTO.toResponse)
+        projects: formattedProjects
       });
     } catch (error) {
       console.error('Error in getProjects:', error);
@@ -146,14 +205,18 @@ const ProjectController = {
     try {
       const { user_id } = req.params;
       const projects = await ProjectService.getProjectsForUser(user_id);
-      if (!projects) {
-        return res.status(404).json({ message: 'No projects found' });
-      }
       if (!projects || projects.length === 0) {
         return res.status(404).json({ message: 'No projects found for this user' });
       }
       
-      return res.status(200).json(projects.map(ProjectDTO.toResponse));
+      const formattedProjects = await Promise.all(
+        projects.map(async (p) => {
+          const isAuth = await ProjectService.isAuthorizedForDocuments(req.user, p);
+          return ProjectDTO.toResponse(p, isAuth);
+        })
+      );
+
+      return res.status(200).json(formattedProjects);
     } catch (error) {
       console.error('Error in getUserProjects:', error);
       return res.status(500).json({ message: 'Internal server error' });
@@ -179,8 +242,14 @@ const ProjectController = {
         return res.status(404).json({ message: 'No projects found' });
       }
   
-      // Assuming ProjectDTO.toResponse formats the project data correctly
-      return res.status(200).json(projects.map(ProjectDTO.toResponse));
+      const formattedProjects = await Promise.all(
+        projects.map(async (p) => {
+          const isAuth = await ProjectService.isAuthorizedForDocuments(req.user, p);
+          return ProjectDTO.toResponse(p, isAuth);
+        })
+      );
+
+      return res.status(200).json(formattedProjects);
     } catch (error) {
       console.error('Error in getProjectsByField:', error);
       return res.status(500).json({ message: 'Internal server error' });
@@ -201,7 +270,7 @@ const ProjectController = {
         return res.status(404).json({ message: 'No projects found' });
       }
 
-      return res.status(200).json(underReviewProjects.map(ProjectDTO.toResponse));
+      return res.status(200).json(underReviewProjects.map(p => ProjectDTO.toResponse(p, true)));
     } catch (error) {
       console.error('Error in getUnderReviewProjects:', error);
       return res.status(500).json({ message: 'Internal server error', error: error.message });

@@ -14,7 +14,7 @@ class UserController {
   async register(req, res) {
     const registerUserDTO = new RegisterUserDTO(req.body);
     try {
-      const token = await UserService.register(registerUserDTO, req.files);
+      const { token, refreshToken } = await UserService.register(registerUserDTO, req.files);
       const admins = await Admin.find();
 
       await Promise.all(
@@ -27,7 +27,6 @@ class UserController {
         })
       );
 
-
       const isProd = process.env.NODE_ENV === 'production';
       res
         .status(201)
@@ -36,7 +35,13 @@ class UserController {
             sameSite: isProd ? 'none' : 'lax', 
             secure: isProd 
         })
-        .json({ message: 'Registration successful' });
+        .cookie('refreshToken', refreshToken, { 
+            httpOnly: true, 
+            sameSite: isProd ? 'none' : 'lax', 
+            secure: isProd,
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+        .json({ message: 'Registration successful', token, refreshToken });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -50,7 +55,8 @@ class UserController {
    * @throws {Error} If the user does not exist or if the password is invalid.
    */
   async login(req, res) {
-    const { username_or_email, password } = req.body;
+    const username_or_email = req.body.username_or_email || req.body.email || req.body.username;
+    const { password } = req.body;
     const loginDTO = new LoginDTO(username_or_email, password);
     const user = await User.findOne({
       $or: [
@@ -59,7 +65,7 @@ class UserController {
       ]
     })
     if (!user) {
-      return res.status(404).json({ message: 'User not Found' });
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
     console.log(user);
     const validationError = loginDTO.isValid();
@@ -67,7 +73,7 @@ class UserController {
       return res.status(400).json({ message: 'Invalid login data' });
     }
     try {
-      const token = await UserService.login(username_or_email, password);
+      const { token, refreshToken } = await UserService.login(username_or_email, password);
       const admins = await Admin.find();
       await Promise.all(
         admins.map(async (admin) => {
@@ -86,7 +92,13 @@ class UserController {
             sameSite: isProd ? 'none' : 'lax', 
             secure: isProd 
         })
-        .json({ message: 'Login successful', user });
+        .cookie('refreshToken', refreshToken, { 
+            httpOnly: true, 
+            sameSite: isProd ? 'none' : 'lax', 
+            secure: isProd,
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+        .json({ message: 'Login successful', user, token, refreshToken });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -212,11 +224,54 @@ class UserController {
     }
   }
 
+  async refreshToken(req, res) {
+    try {
+      const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+      const result = await UserService.refreshAccessToken(refreshToken);
+      const isProd = process.env.NODE_ENV === 'production';
+      res
+        .status(200)
+        .cookie('token', result.token, { 
+            httpOnly: true, 
+            sameSite: isProd ? 'none' : 'lax', 
+            secure: isProd 
+        })
+        .cookie('refreshToken', result.refreshToken, { 
+            httpOnly: true, 
+            sameSite: isProd ? 'none' : 'lax', 
+            secure: isProd,
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+        .json(result);
+    } catch (error) {
+      res.status(401).json({ message: error.message });
+    }
+  }
+
   async logout(req, res) {
     try {
+      if (req.user?.id) {
+        await UserService.revokeRefreshToken(req.user.id);
+      } else {
+        const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+        if (refreshToken) {
+          try {
+            const decoded = require('jsonwebtoken').decode(refreshToken);
+            if (decoded?.user?.id) {
+              await UserService.revokeRefreshToken(decoded.user.id);
+            }
+          } catch (_) {}
+        }
+      }
       const isProd = process.env.NODE_ENV === 'production';
       res.status(200)
       .cookie('token', '', { 
+          httpOnly: true, 
+          sameSite: isProd ? 'none' : 'lax', 
+          secure: isProd, 
+          expires: new Date(0) 
+      })
+      .cookie('refreshToken', '', { 
           httpOnly: true, 
           sameSite: isProd ? 'none' : 'lax', 
           secure: isProd, 

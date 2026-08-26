@@ -1,41 +1,31 @@
-
-const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
-const Page = require('../db/models/pageModel'); 
+const { MongoMemoryServer } = require('mongodb-memory-server');
 
 describe('Page Schema Insertion', () => {
-  let client;  // MongoClient connection
-  let db;
+  let mongoServer;
 
   beforeAll(async () => {
-    // MongoDB native connection using your database "Innovest" on localhost
-    const uri = 'mongodb://localhost:27017'; // Local URI
-    client = await MongoClient.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    db = await client.db('Innovest'); // Connect to the "Innovest" database
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
 
-    // Mongoose connection to the same URI and database
-    await mongoose.connect(uri + '/Innovest', {
+    await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
   });
 
   afterAll(async () => {
-    if (client) {
-      await client.close(); // Close MongoClient connection
-    }
-    if (mongoose.connection) {
-      await mongoose.connection.close(); // Close Mongoose connection
-    }
+    await mongoose.disconnect();
+    await mongoServer.stop();
+  });
+
+  beforeEach(async () => {
+    await mongoose.connection.collection('pages').deleteMany({});
   });
 
   it('should insert a Page document into the collection', async () => {
-    const pages = db.collection('pages');
+    const pages = mongoose.connection.collection('pages');
 
-    // Mock data to fit the Page schema
     const mockPage = {
       title: 'Sample Page',
       content: 'This is the content of the sample page.',
@@ -50,14 +40,9 @@ describe('Page Schema Insertion', () => {
       community: [new mongoose.Types.ObjectId(), new mongoose.Types.ObjectId()]
     };
 
-    // Insert document
     await pages.insertOne(mockPage);
 
-    // Find and assert the inserted document
     const insertedPage = await pages.findOne({ page_url: 'http://example.com/sample-page' });
-    expect(insertedPage).toMatchObject(mockPage);  // Check that the document matches the mock data
+    expect(insertedPage).toMatchObject(mockPage);
   });
 });
-
-
-   

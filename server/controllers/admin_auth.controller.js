@@ -32,7 +32,8 @@ class AdminAuthController {
    * @throws {Error} If the user does not exist or if the password is invalid.
    */
   async login(req, res) {
-    const { username_or_email, password } = req.body;
+    const username_or_email = req.body.username_or_email || req.body.email || req.body.username;
+    const { password } = req.body;
     const loginDTO = new LoginDTO(username_or_email, password);
 
     const user = await Admin.findOne({ 

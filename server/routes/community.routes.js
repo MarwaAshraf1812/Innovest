@@ -3,6 +3,8 @@ const CommunityController = require('../controllers/community.controller');
 const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
+const validatePayload = require('../middlewares/validatePayload.middleware');
+const { createcommunityValidationSchema } = require('../db/validators/communityValidator');
 const router = express.Router();
 
 // Community Management Routes
@@ -16,12 +18,14 @@ router.post('/',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['CREATE_COMMUNITY']),
+  validatePayload(createcommunityValidationSchema),
   CommunityController.createCommunity);
 
 router.put('/:community_id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['UPDATE_COMMUNITY']),
+  validatePayload(createcommunityValidationSchema),
   CommunityController.updateCommunity);
 
 router.delete('/:community_id',

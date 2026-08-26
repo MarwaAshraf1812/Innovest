@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { getIo } = require('../config/socket');
 const CommentService = require('../services/comment.service');
 const notificationService = require('../services/notification.service');
@@ -5,14 +6,13 @@ const notificationService = require('../services/notification.service');
 class CommentController {
   /**
    * Creates a new comment for a given page by ID and user ID.
-   * The comment is created with the data provided in the request body.
-   * @param {Object} req - The HTTP request object containing the page ID in the params and comment data in the body.
-   * @param {Object} res - The HTTP response object.
-   * @returns {Promise<void>} - Responds with a 201 status code if successful, a 500 status code if an error occurred.
    */
   async createComment(req, res) {
     try {
       const { page_id } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(page_id)) {
+        return res.status(400).json({ message: 'Invalid page_id format' });
+      }
       const user_id = req.user.id;
       const { content } = req.body;
       const comment = await CommentService.createComment(
@@ -40,15 +40,12 @@ class CommentController {
 
   /**
    * Retrieves all comments for a given page by ID.
-   * @param {Object} req - The HTTP request object containing the page ID in the params.
-   * @param {Object} res - The HTTP response object.
-   * @returns {Promise<void>} - Responds with a list of comment objects,
-   * each containing the `user` field with the username
-   *   of the user who made the comment.
-   * @throws {Error} - If an error occurs while fetching the comments.
    */
   async getComments(req, res) {
     const { page_id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(page_id)) {
+      return res.status(400).json({ message: 'Invalid page_id format' });
+    }
 
     try {
       const comments = await CommentService.getCommentsByPage(page_id);
@@ -61,14 +58,13 @@ class CommentController {
   }
 
   /**
-   * Deletes a comment by its ID and the ID of the user who made it.
-   * @param {Object} req - The HTTP request object containing the comment ID in the params.
-   * @param {Object} res - The HTTP response object.
-   * @returns {Promise<void>} - Responds with a 200 status code if successful, a 500 status code if an error occurred.
-   * @throws {Error} - If an error occurs while deleting the comment.
+   * Deletes a comment by its ID.
    */
   async deleteComment(req, res) {
     const { comment_id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(comment_id)) {
+      return res.status(400).json({ message: 'Invalid comment_id format' });
+    }
     const userId = req.user.id;
     const isAdmin = req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN';
 
@@ -81,16 +77,13 @@ class CommentController {
   }
 
   /**
-   * Updates a comment by its ID and the ID of the user who made it, replacing
-   * its content with the provided string. If the comment is successfully
-   * updated, the updated comment is returned.
-   * @param {Object} req - The HTTP request object containing the comment ID in the params and updated comment data in the body.
-   * @param {Object} res - The HTTP response object.
-   * @returns {Promise<void>} - Responds with a 200 status code if successful, a 500 status code if an error occurred.
-   * @throws {Error} - If an error occurs while updating the comment.
+   * Updates a comment by its ID.
    */
   async updateComment(req, res) {
     const { comment_id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(comment_id)) {
+      return res.status(400).json({ message: 'Invalid comment_id format' });
+    }
     const userId = req.user.id;
     const { content } = req.body;
 

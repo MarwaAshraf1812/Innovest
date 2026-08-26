@@ -86,6 +86,9 @@ const userSchema = new Schema(
 
     // Following
     following: [{ type: String }],
+
+    // Refresh Token Hash
+    refresh_token: { type: String, default: null },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
