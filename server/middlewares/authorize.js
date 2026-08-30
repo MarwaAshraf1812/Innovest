@@ -3,7 +3,7 @@
  * Restricts route access based on user role (e.g., investor, entrepreneur, admin).
  * @param {...string} allowedRoles 
  */
-const authorizeRoles = (...allowedRoles) => {
+export const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ message: 'Unauthorized. Authentication required.' });
@@ -27,7 +27,7 @@ const authorizeRoles = (...allowedRoles) => {
  * @param {MongooseModel} Model 
  * @param {string} ownerField 
  */
-const authorizeOwnership = (Model, ownerField = 'userId') => {
+export const authorizeOwnership = (Model, ownerField = 'userId') => {
   return async (req, res, next) => {
     try {
       if (!req.user) {
@@ -62,7 +62,7 @@ const authorizeOwnership = (Model, ownerField = 'userId') => {
   };
 };
 
-module.exports = {
+export default {
   authorizeRoles,
   authorizeOwnership
 };

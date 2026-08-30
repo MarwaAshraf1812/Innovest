@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-const createUserValidationSchema = Joi.object({
+export const createUserValidationSchema = Joi.object({
   first_name: Joi.string().max(30).required(),
   last_name: Joi.string().max(30).required(),
   username: Joi.string().max(50).required(),
@@ -22,4 +22,4 @@ const createUserValidationSchema = Joi.object({
   user_interests: Joi.array().items(Joi.string()).optional(), 
 });
 
-module.exports = { createUserValidationSchema };
+export default { createUserValidationSchema };

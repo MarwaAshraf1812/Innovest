@@ -1,6 +1,6 @@
-const Proposal = require('../../db/models/proposal.model');
+import Proposal from '../../db/models/proposal.model.js';
 
-const ProposalDAO = {
+export const ProposalDAO = {
   
   async createProposal(proposalData) {
     console.log(proposalData);
@@ -88,4 +88,4 @@ const ProposalDAO = {
   },
 };
 
-exports.ProposalDAO = ProposalDAO;
+export default ProposalDAO;

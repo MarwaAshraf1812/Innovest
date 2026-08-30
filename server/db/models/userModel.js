@@ -1,9 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import uniqueValidator from 'mongoose-unique-validator';
+import validator from 'validator';
+import { userPermissionsEnum } from './permissionsEnum.js';
+
 const { Schema } = mongoose;
-const { v4: uuidv4} = require('uuid');
-const uniqueValidator = require('mongoose-unique-validator');
-const validator = require('validator');
-const { userPermissionsEnum } = require('./permissionsEnum');
 
 const userSchema = new Schema(
   {
@@ -165,15 +166,15 @@ const userLanguagesSchema = new Schema(
   { timestamps: true },
 );
 
-const User = mongoose.model('User', userSchema);
-const Interest = mongoose.model('Interest', interestsSchema);
-const UserInterests = mongoose.model('UserInterests', userInterestsSchema);
-const Languages = mongoose.model('Languages', languagesSchema);
-const UserLanguages = mongoose.model('UserLanguages', userLanguagesSchema);
-
 userSchema.plugin(uniqueValidator);
 
-module.exports = {
+export const User = mongoose.models.User || mongoose.model('User', userSchema);
+export const Interest = mongoose.models.Interest || mongoose.model('Interest', interestsSchema);
+export const UserInterests = mongoose.models.UserInterests || mongoose.model('UserInterests', userInterestsSchema);
+export const Languages = mongoose.models.Languages || mongoose.model('Languages', languagesSchema);
+export const UserLanguages = mongoose.models.UserLanguages || mongoose.model('UserLanguages', userLanguagesSchema);
+
+export default {
   User,
   Interest,
   UserInterests,

@@ -1,4 +1,4 @@
-class UpdateFeedbackDTO {
+export class UpdateFeedbackDTO {
   constructor(feedback) {
     this.id = feedback.id;
     this.rate = feedback.rate || null;
@@ -14,4 +14,4 @@ class UpdateFeedbackDTO {
   }
 }
 
-module.exports = { UpdateFeedbackDTO };
+export default { UpdateFeedbackDTO };

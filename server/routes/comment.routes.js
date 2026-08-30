@@ -1,9 +1,9 @@
-const express = require('express');
-const CommentController = require('../controllers/comment.controller');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const validatePayload = require('../middlewares/validatePayload.middleware');
-const { createCommentValidationSchema } = require('../db/validators/commentValidator');
+import express from 'express';
+import CommentController from '../controllers/comment.controller.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
+import validatePayload from '../middlewares/validatePayload.middleware.js';
+import { createCommentValidationSchema } from '../db/validators/commentValidator.js';
 
 const router = express.Router();
 
@@ -34,4 +34,4 @@ router.put('/:comment_id',
     CommentController.updateComment
 );
 
-module.exports = router;
+export default router;

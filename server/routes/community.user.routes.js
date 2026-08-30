@@ -1,8 +1,9 @@
-const express = require('express');
-const CommunityController = require('../controllers/community.controller');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const checkRole = require('../middlewares/role.middleware');
+import express from 'express';
+import CommunityController from '../controllers/community.controller.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import checkRole from '../middlewares/role.middleware.js';
+
 const router = express.Router();
 
 // User Management in Community Routes
@@ -48,4 +49,4 @@ router.get('/:community_id/users',
   AuthMiddleware(),
   CommunityController.getCommunityUsers);
 
-module.exports = router;
+export default router;

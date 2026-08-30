@@ -1,7 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 // Define the validation schema for a project
-const projectValidationSchema = Joi.object({
+export const projectValidationSchema = Joi.object({
   project_name: Joi.string().min(3).max(100).required(),
   description: Joi.string().min(10).max(1000).required(),
   entrepreneur_id: Joi.string().optional(), 
@@ -15,7 +15,7 @@ const projectValidationSchema = Joi.object({
   documents: Joi.array().items(Joi.string()).optional()
 });
 
-const projectUpdateValidationSchema = Joi.object({
+export const projectUpdateValidationSchema = Joi.object({
   project_name: Joi.string().min(3).max(100).optional(),
   description: Joi.string().min(10).max(1000).optional(),
   entrepreneur_id: Joi.string().optional(), 
@@ -29,4 +29,4 @@ const projectUpdateValidationSchema = Joi.object({
   documents: Joi.array().items(Joi.string()).optional()
 });
 
-module.exports = { projectValidationSchema, projectUpdateValidationSchema };
+export default { projectValidationSchema, projectUpdateValidationSchema };

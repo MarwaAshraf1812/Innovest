@@ -1,7 +1,10 @@
-const path = require('path');
-const fs = require('fs').promises; // Use fs.promises for async/await
+import path from 'path';
+import fs from 'fs/promises';
+
+const defaultUploadDir = path.join(process.cwd(), 'uploads');
+
 class FileManagement {
-    default_upload_path = path.join(__dirname, '/../uploads');
+    default_upload_path = defaultUploadDir;
 
     resolve_file_path(file_name, directory = this.default_upload_path) {
         const cleanName = path.basename(file_name || '');
@@ -50,4 +53,4 @@ class FileManagement {
     }
 }
 
-module.exports = new FileManagement();
+export default new FileManagement();

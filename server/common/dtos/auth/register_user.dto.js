@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-class RegisterUserDTO {
+export class RegisterUserDTO {
     constructor(data) {
         this.first_name = data.first_name;
         this.last_name = data.last_name;
@@ -58,4 +58,4 @@ class RegisterUserDTO {
     }
 }
 
-module.exports = RegisterUserDTO ;   
+export default RegisterUserDTO;

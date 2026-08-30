@@ -1,10 +1,11 @@
-const express = require('express');
-const ProjectController = require('../controllers/project.controller');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const checkRole = require('../middlewares/role.middleware');
-const validatePayload = require('../middlewares/validatePayload.middleware');
-const { projectValidationSchema, projectUpdateValidationSchema } = require('../db/validators/projectValidator');
-var multer = require('multer');
+import express from 'express';
+import ProjectController from '../controllers/project.controller.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import checkRole from '../middlewares/role.middleware.js';
+import validatePayload from '../middlewares/validatePayload.middleware.js';
+import { projectValidationSchema, projectUpdateValidationSchema } from '../db/validators/projectValidator.js';
+import multer from 'multer';
+
 const router = express.Router();
 
 const storage = multer.memoryStorage();
@@ -84,4 +85,4 @@ router.post('/:project_id/interest',
   checkRole(['INVESTOR']),
   ProjectController.expressInterest);
 
-module.exports = router;
+export default router;

@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const fs = require('fs').promises;
-const path = require('path');
-const Project = require('../db/models/projectModel');
-const { User } = require('../db/models/userModel');
-const FileManagement = require('../services/file_management.service');
-const OrphanedFileCleanupService = require('../services/orphaned_file_cleanup.service');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import fs from 'fs/promises';
+import path from 'path';
+import Project from '../db/models/projectModel.js';
+import { User } from '../db/models/userModel.js';
+import FileManagement from '../services/file_management.service.js';
+import OrphanedFileCleanupService from '../services/orphaned_file_cleanup.service.js';
 
 describe('Orphaned File Cleanup Worker Tests', () => {
   let mongoServer;

@@ -1,5 +1,7 @@
-const Message = require('../db/models/messagesModel');
-const { v4: uuidv4 } = require('uuid');
+import Message from '../db/models/messagesModel.js';
+import { v4 as uuidv4 } from 'uuid';
+import { getIo } from '../config/socket.js';
+import { User } from '../db/models/userModel.js';
 
 class MessageController {
   async getConversation(req, res) {
@@ -41,7 +43,6 @@ class MessageController {
 
       // Emit through Socket.IO if possible
       try {
-        const { getIo } = require('../config/socket');
         getIo().to(receiver_id).emit('receiveMessage', message);
       } catch (err) {
         console.warn('Socket emit failed:', err.message);
@@ -56,7 +57,6 @@ class MessageController {
   async getContacts(req, res) {
     try {
       const userId = req.user.id;
-      const { User } = require('../db/models/userModel');
       
       // Fetch all verified users except current user
       const users = await User.find(
@@ -99,4 +99,4 @@ class MessageController {
   }
 }
 
-module.exports = new MessageController();
+export default new MessageController();

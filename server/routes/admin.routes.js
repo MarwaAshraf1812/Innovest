@@ -1,15 +1,15 @@
-const express = require('express');
-const Joi = require('joi');
-const AdminController = require('../controllers/admin.controller');
-const checkRole = require('../middlewares/role.middleware');
-const AdminAuthController = require('../controllers/admin_auth.controller');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const { checkOwnership } = require('../middlewares/checkOwnership.middleware');
-const validatePayload = require('../middlewares/validatePayload.middleware');
-const { authLimiter } = require('../middlewares/rateLimiter.middleware');
-const adminValidationSchema = require('../db/validators/adminValidator');
-const Admin = require('../db/models/adminModel');
+import express from 'express';
+import Joi from 'joi';
+import AdminController from '../controllers/admin.controller.js';
+import checkRole from '../middlewares/role.middleware.js';
+import AdminAuthController from '../controllers/admin_auth.controller.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import { checkOwnership } from '../middlewares/checkOwnership.middleware.js';
+import validatePayload from '../middlewares/validatePayload.middleware.js';
+import { authLimiter } from '../middlewares/rateLimiter.middleware.js';
+import adminValidationSchema from '../db/validators/adminValidator.js';
+import Admin from '../db/models/adminModel.js';
 
 const router = express.Router();
 
@@ -61,4 +61,4 @@ router.get('/:id',
   checkRole(['SUPER_ADMIN', 'ADMIN']),
   AdminController.getById);
 
-module.exports = router;
+export default router;

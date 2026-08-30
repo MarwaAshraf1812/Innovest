@@ -1,4 +1,4 @@
-class CreateCommunityPagesDTO {
+export class CreateCommunityPagesDTO {
   constructor(data) {
     this.community_name = data.community_name;
     this.page_id = data.page_id;
@@ -12,12 +12,10 @@ class CreateCommunityPagesDTO {
   }
 }
 
-module.exports = CreateCommunityPagesDTO;
-
-class UpdateCommunityPagesDTO {
+export class UpdateCommunityPagesDTO {
   constructor(data) {
     this.community_name = data.community_name;
-    this.page_id = data.page_id; /*  */
+    this.page_id = data.page_id;
     this.admin = data.admin;
     this.visibility = data.visibility;
   }
@@ -32,4 +30,4 @@ class UpdateCommunityPagesDTO {
   }
 }
 
-module.exports = UpdateCommunityPagesDTO;
+export default { CreateCommunityPagesDTO, UpdateCommunityPagesDTO };

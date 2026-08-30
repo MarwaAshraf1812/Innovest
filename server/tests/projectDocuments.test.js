@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const ProjectController = require('../controllers/project.controller');
-const Project = require('../db/models/projectModel');
-const Proposal = require('../db/models/proposalModel');
-const Investment = require('../db/models/investmentModel');
-const { User } = require('../db/models/userModel');
-const FileManagement = require('../services/file_management.service');
-const fs = require('fs').promises;
-const path = require('path');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import ProjectController from '../controllers/project.controller.js';
+import Project from '../db/models/projectModel.js';
+import Proposal from '../db/models/proposalModel.js';
+import Investment from '../db/models/investmentModel.js';
+import { User } from '../db/models/userModel.js';
+import FileManagement from '../services/file_management.service.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 describe('Project Document Security & Handling Tests', () => {
   let mongoServer;

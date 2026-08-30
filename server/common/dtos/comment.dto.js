@@ -1,4 +1,4 @@
-class CommentDTO {
+export class CommentDTO {
     constructor(comment) {
       this.comment_id = comment.comment_id;
       this.content = comment.content;
@@ -8,24 +8,20 @@ class CommentDTO {
     }
   
     validate() {
-        // Provide specific comment on missing required fields
         if (!this.content) throw new Error('content is required');
-      }
-  }
+    }
+}
 
-
-  class UpdateCommentDTO {
+export class UpdateCommentDTO {
     constructor(data) {
       this.content = data.content;  // Only content can be updated
     }
   
-    // You could add validation logic here if needed
     validate() {
       if (!this.content) {
         throw new Error("Content is required to update the comment.");
       }
     }
 }
-  
-  module.exports = {CommentDTO , UpdateCommentDTO};
-  
+
+export default { CommentDTO, UpdateCommentDTO };

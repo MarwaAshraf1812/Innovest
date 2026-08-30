@@ -1,4 +1,4 @@
-const LikeDAO = require('../common/daos/like.dao');
+import LikeDAO from '../common/daos/like.dao.js';
 
 class LikeService {
   async createLike(pageId, userId) {
@@ -42,4 +42,4 @@ class LikeService {
   }
 }
 
-module.exports = new LikeService();
+export default new LikeService();

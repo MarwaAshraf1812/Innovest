@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 const pageSchema = new mongoose.Schema({
   page_id: { type: String, default: uuidv4, unique: true },
@@ -26,4 +26,4 @@ const pageSchema = new mongoose.Schema({
 );
 
 const Page = mongoose.model('Page', pageSchema);
-module.exports = Page;
+export default Page;

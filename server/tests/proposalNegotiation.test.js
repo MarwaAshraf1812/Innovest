@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const ProposalController = require('../controllers/proposal.controller');
-const Proposal = require('../db/models/proposalModel');
-const Project = require('../db/models/projectModel');
-const Investment = require('../db/models/investmentModel');
-const { User } = require('../db/models/userModel');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import ProposalController from '../controllers/proposal.controller.js';
+import Proposal from '../db/models/proposalModel.js';
+import Project from '../db/models/projectModel.js';
+import Investment from '../db/models/investmentModel.js';
+import { User } from '../db/models/userModel.js';
 
 describe('Proposal Negotiation System Tests', () => {
   let mongoServer;

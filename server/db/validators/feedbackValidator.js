@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-const createFeedbackValidationSchema = Joi.object({
+export const createFeedbackValidationSchema = Joi.object({
   rate: Joi.number().min(0).max(5).optional(),
   content: Joi.string().required(),
   user_id: Joi.string().hex().length(24).required(),
@@ -8,7 +8,7 @@ const createFeedbackValidationSchema = Joi.object({
   feedbacker_id: Joi.string().hex().length(24).optional()
 });
 
-const updateFeedbackValidationSchema = Joi.object({
+export const updateFeedbackValidationSchema = Joi.object({
   rate: Joi.number().min(0).max(5).optional(),
   content: Joi.string().optional(),
   user_id: Joi.string().hex().length(24).optional(),
@@ -16,7 +16,7 @@ const updateFeedbackValidationSchema = Joi.object({
   feedbacker_id: Joi.string().hex().length(24).optional()
 });
 
-module.exports = {
+export default {
   createFeedbackValidationSchema,
   updateFeedbackValidationSchema
 };

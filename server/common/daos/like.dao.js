@@ -1,6 +1,6 @@
-const Like = require('../../db/models/likeModel');
-const Page = require('../../db/models/pageModel');
-const { User } = require('../../db/models/userModel');
+import Like from '../../db/models/likeModel.js';
+import Page from '../../db/models/pageModel.js';
+import { User } from '../../db/models/userModel.js';
 
 class LikeDAO {
   /**
@@ -155,4 +155,4 @@ class LikeDAO {
   }
 }
 
-module.exports = new LikeDAO();
+export default new LikeDAO();

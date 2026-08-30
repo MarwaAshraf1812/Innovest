@@ -1,11 +1,10 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-class RegisterDTO {
+export class RegisterDTO {
   constructor(username, email, password) {
     this.username = username;
     this.email = email;
     this.password = password;
-    
   }
 
   static validationSchema() {
@@ -30,4 +29,4 @@ class RegisterDTO {
   }
 }
 
-module.exports = RegisterDTO;
+export default RegisterDTO;

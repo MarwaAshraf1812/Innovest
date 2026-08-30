@@ -1,11 +1,11 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-const investmentValidationSchema = Joi.object({
-    invest_id: Joi.String().integer().required(),
-    budget_amount: Joi.float().required(),
+export const investmentValidationSchema = Joi.object({
+    invest_id: Joi.string().required(),
+    budget_amount: Joi.number().required(),
     name: Joi.string().min(3).required(), 
     investor_id: Joi.string().hex().length(24).required(), 
     project_id: Joi.string().hex().length(24).required(), 
 });
 
-module.exports = { investmentValidationSchema };
+export default { investmentValidationSchema };

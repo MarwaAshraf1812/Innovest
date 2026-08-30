@@ -1,7 +1,6 @@
-const PageDAO = require('../common/daos/page.dao');
-const notificationService = require('./notification.service');
-// const socketIO = require('../config/socket');
-const CommunityPages = require('../db/models/communityPagesModel');
+import PageDAO from '../common/daos/page.dao.js';
+import notificationService from './notification.service.js';
+import CommunityPages from '../db/models/communityPagesModel.js';
 
 class PageService {
   /**
@@ -31,9 +30,6 @@ class PageService {
         page_id: page.page_id,
         author: userId,
       });
-
-      // Emit event to notify others
-      // socketIO.getIO().emit('new_page_created', page);
 
       return page; // Return the created page
     } catch (error) {
@@ -212,4 +208,4 @@ class PageService {
   }
 }
 
-module.exports = new PageService();
+export default new PageService();

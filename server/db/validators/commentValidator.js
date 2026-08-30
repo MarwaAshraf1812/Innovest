@@ -1,7 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-const createCommentValidationSchema = Joi.object({
+export const createCommentValidationSchema = Joi.object({
   content: Joi.string().trim().min(1).max(1000).required(),
 });
 
-module.exports = { createCommentValidationSchema };
+export default { createCommentValidationSchema };

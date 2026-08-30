@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const AuthMiddleware = () => {
     return (req, res, next) => {
@@ -31,4 +31,4 @@ const AuthMiddleware = () => {
     };
 };
 
-module.exports = AuthMiddleware;
+export default AuthMiddleware;

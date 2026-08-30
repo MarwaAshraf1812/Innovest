@@ -1,10 +1,7 @@
-const { Router } = require('express');
-const proposalRoutes = require('../routes/proposal.routes');
+import { Router } from 'express';
+import proposalRoutes from '../routes/proposal.routes.js';
 
-const proposalModule = () => {
-  const router = Router();
-  router.use('/proposal', proposalRoutes);
-  return router;
-};
+const router = Router();
+router.use('/proposals', proposalRoutes);
 
-module.exports = proposalModule;
+export default router;

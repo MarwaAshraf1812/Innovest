@@ -1,12 +1,12 @@
-const userDao = require('../common/daos/user.dao');
-const AdminDao = require('../common/daos/admin.dao');
-const FileManagement = require('./file_management.service');
-const nodemailer = require('nodemailer');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const validator = require('validator');
-const crypto = require('crypto');
-const { getIo } = require('../config/socket');
+import userDao from '../common/daos/user.dao.js';
+import AdminDao from '../common/daos/admin.dao.js';
+import FileManagement from './file_management.service.js';
+import nodemailer from 'nodemailer';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import validator from 'validator';
+import crypto from 'crypto';
+import { getIo } from '../config/socket.js';
 
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
@@ -349,4 +349,4 @@ class UserServices {
     }
 }
 
-module.exports = new UserServices();
+export default new UserServices();

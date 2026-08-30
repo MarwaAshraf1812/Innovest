@@ -1,5 +1,4 @@
-
-const checkOwnership = (model, isField) => {
+export const checkOwnership = (model, isField) => {
 
   return async (req, res, next) => {
     try {
@@ -27,4 +26,4 @@ const checkOwnership = (model, isField) => {
   }
 }
 
-module.exports = { checkOwnership };
+export default { checkOwnership };

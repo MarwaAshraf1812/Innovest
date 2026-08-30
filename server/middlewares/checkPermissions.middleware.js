@@ -1,4 +1,4 @@
-const checkPermissions = (requiredPermissions) => {
+export const checkPermissions = (requiredPermissions) => {
   return (req, res, next) => {
     const userPermissions = req.user.permissions || [];
     
@@ -36,4 +36,4 @@ const checkPermissions = (requiredPermissions) => {
   };
 };
 
-module.exports = { checkPermissions };
+export default { checkPermissions };

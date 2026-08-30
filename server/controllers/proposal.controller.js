@@ -1,4 +1,4 @@
-const ProposalService = require('../services/proposal.service');
+import ProposalService from '../services/proposal.service.js';
 
 class ProposalController {
   async createProposal(req, res) {
@@ -96,4 +96,4 @@ class ProposalController {
   }
 }
 
-module.exports = new ProposalController();
+export default new ProposalController();

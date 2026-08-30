@@ -33,4 +33,4 @@ const registerNotificationHandlers = (io, socket) => {
   });
 };
 
-module.exports = registerNotificationHandlers;
+export default registerNotificationHandlers;

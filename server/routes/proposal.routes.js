@@ -1,8 +1,8 @@
-const express = require('express');
-const ProposalController = require('../controllers/proposal.controller');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const validatePayload = require('../middlewares/validatePayload.middleware');
-const { createProposalSchema, counterProposalSchema } = require('../db/validators/proposalValidator');
+import express from 'express';
+import ProposalController from '../controllers/proposal.controller.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import validatePayload from '../middlewares/validatePayload.middleware.js';
+import { createProposalSchema, counterProposalSchema } from '../db/validators/proposalValidator.js';
 
 const router = express.Router();
 
@@ -48,4 +48,4 @@ router.get('/:id',
   ProposalController.getProposalById
 );
 
-module.exports = router;
+export default router;

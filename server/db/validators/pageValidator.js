@@ -1,7 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const pageSchema = Joi.object({
-
     title: Joi.string().max(500).required(),
     content: Joi.string().required(),
     location: Joi.string().optional(),
@@ -16,11 +15,11 @@ const pageSchema = Joi.object({
 });
 
 // Validation function for creating a page
-const validateCreatePage = (pageData) => {
+export const validateCreatePage = (pageData) => {
     return pageSchema.validate(pageData);
 };
 
-const validateUpdatePage = (pageData) => {
+export const validateUpdatePage = (pageData) => {
     const updateSchema = pageSchema.fork(
         ['title', 'content', 'location', 'images_url', 'start_time', 'end_time', 'tags', 'page_type'],
         (field) => field.optional() // Make these fields optional during the update
@@ -29,8 +28,7 @@ const validateUpdatePage = (pageData) => {
     return updateSchema.validate(pageData);
 };
 
-
-module.exports = {
+export default {
     validateCreatePage,
     validateUpdatePage,
 };

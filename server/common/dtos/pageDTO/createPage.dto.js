@@ -1,4 +1,4 @@
-class CreatePageDTO {
+export class CreatePageDTO {
   constructor(pageData) {
     this.title = pageData.title;
     this.content = pageData.content;
@@ -10,8 +10,8 @@ class CreatePageDTO {
     this.page_type = pageData.page_type;
     this.tags = pageData.tags || [];
 
-    this.author = author;
-    this.admin_id = admin_id;
+    this.author = pageData.author;
+    this.admin_id = pageData.admin_id;
   }
 
   validate() {
@@ -21,4 +21,4 @@ class CreatePageDTO {
   }
 }
 
-module.exports = CreatePageDTO;
+export default CreatePageDTO;

@@ -14,19 +14,22 @@
  *   node seed/master.seed.js
  */
 
-const mongoose = require('mongoose');
-const bcrypt   = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import dotenv from 'dotenv';
 
-const { User }        = require('../db/models/userModel');
-const Admin           = require('../db/models/adminModel');
-const Community       = require('../db/models/communityModel');
-const Page            = require('../db/models/pageModel');
-const CommunityPages  = require('../db/models/communityPagesModel');
-const CommunityUsers  = require('../db/models/communityUsersModel');
-const { adminPermissionsEnum, userPermissionsEnum } = require('../db/models/permissionsEnum');
+import { User } from '../db/models/userModel.js';
+import Admin from '../db/models/adminModel.js';
+import Community from '../db/models/communityModel.js';
+import Page from '../db/models/pageModel.js';
+import CommunityPages from '../db/models/communityPagesModel.js';
+import CommunityUsers from '../db/models/communityUsersModel.js';
+import { adminPermissionsEnum, userPermissionsEnum } from '../db/models/permissionsEnum.js';
 
-const MONGO_URI = 'mongodb://localhost:27017/Innovest';
+dotenv.config();
+
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/Innovest';
 
 /* ─── helpers ──────────────────────────────────────── */
 const hash = (pw) => bcrypt.hash(pw, 10);

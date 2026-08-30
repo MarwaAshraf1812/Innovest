@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const ProjectController = require('../controllers/project.controller');
-const CommunityController = require('../controllers/community.controller');
-const MessageController = require('../controllers/message.controller');
-const Project = require('../db/models/projectModel');
-const Community = require('../db/models/communityModel');
-const Message = require('../db/models/messagesModel');
-const Admin = require('../db/models/adminModel');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import ProjectController from '../controllers/project.controller.js';
+import CommunityController from '../controllers/community.controller.js';
+import MessageController from '../controllers/message.controller.js';
+import Project from '../db/models/projectModel.js';
+import Community from '../db/models/communityModel.js';
+import Message from '../db/models/messagesModel.js';
+import Admin from '../db/models/adminModel.js';
 
 describe('Field Spoofing Protection Tests', () => {
   let mongoServer;

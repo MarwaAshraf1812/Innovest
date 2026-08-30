@@ -1,10 +1,7 @@
-const { Router } = require('express');
-const commentRoutes = require('../routes/comment.routes');
+import { Router } from 'express';
+import commentRoutes from '../routes/comment.routes.js';
 
-const commentModule = () => {
-  const router = Router();
-  router.use('/comments', commentRoutes);
-  return router;
-};
+const router = Router();
+router.use('/comments', commentRoutes);
 
-module.exports = commentModule;
+export default router;

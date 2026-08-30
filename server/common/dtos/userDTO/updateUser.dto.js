@@ -1,4 +1,4 @@
-class UpdateUserDTO {
+export class UpdateUserDTO {
   constructor(user) {
     this.id = user.id; 
     this.username = user.username || null;
@@ -24,25 +24,21 @@ class UpdateUserDTO {
   validate() {
     if (!this.id) throw new Error('User ID is required for updates');
 
-    // Validate email format if provided
     if (this.email) {
       const emailRegex = /\S+@\S+\.\S+/;
       if (!emailRegex.test(this.email)) throw new Error('Invalid email format');
     }
 
-    // Validate phone number format if provided
     if (this.phone && !/^\d{10,15}$/.test(this.phone)) throw new Error('Invalid phone number format');
 
-    // Validate that investment_preferences is an array if provided
     if (this.investment_preferences && !Array.isArray(this.investment_preferences)) {
       throw new Error('Investment preferences must be an array');
     }
 
-    // Validate that idNationality is a number if provided
     if (this.id_nationality && typeof this.id_nationality !== 'number') {
       throw new Error('Nationality ID must be a number');
     }
   }
 }
 
-module.exports = { UpdateUserDTO };
+export default { UpdateUserDTO };

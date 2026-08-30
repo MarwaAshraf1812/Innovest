@@ -1,18 +1,18 @@
-const express = require('express');
-const Joi = require('joi');
-const UserAuthController = require('../controllers/user_auth.controller');
-const UserController = require('../controllers/user.controller');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const checkRole = require('../middlewares/role.middleware');
-const validatePayload = require('../middlewares/validatePayload.middleware');
-const { authLimiter } = require('../middlewares/rateLimiter.middleware');
-const { createUserValidationSchema } = require('../db/validators/userValidations/createUser.validator');
-const { updateUserValidationSchema } = require('../db/validators/userValidations/updateUser.validator');
+import express from 'express';
+import Joi from 'joi';
+import UserAuthController from '../controllers/user_auth.controller.js';
+import UserController from '../controllers/user.controller.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import checkRole from '../middlewares/role.middleware.js';
+import validatePayload from '../middlewares/validatePayload.middleware.js';
+import { authLimiter } from '../middlewares/rateLimiter.middleware.js';
+import { createUserValidationSchema } from '../db/validators/userValidations/createUser.validator.js';
+import { updateUserValidationSchema } from '../db/validators/userValidations/updateUser.validator.js';
+import multer from 'multer';
 
 const router = express.Router();
-var multer = require('multer');
-var multParse = multer();
+const multParse = multer();
 
 const loginValidationSchema = Joi.object({
   username_or_email: Joi.string().optional(),
@@ -102,4 +102,4 @@ router.put('/:id',
   validatePayload(updateUserValidationSchema),
   UserController.updateUser);
 
-module.exports = router;
+export default router;

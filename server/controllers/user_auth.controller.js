@@ -1,9 +1,11 @@
-const UserService = require('../services/user_auth.service');
-const RegisterUserDTO = require('../common/dtos/auth/register_user.dto');
-const LoginDTO = require('../common/dtos/auth/login.dto');
-const { User } = require('../db/models/userModel');
-const Admin = require('../db/models/adminModel');
-const notificationService = require('../services/notification.service');
+import UserService from '../services/user_auth.service.js';
+import RegisterUserDTO from '../common/dtos/auth/register_user.dto.js';
+import LoginDTO from '../common/dtos/auth/login.dto.js';
+import { User } from '../db/models/userModel.js';
+import Admin from '../db/models/adminModel.js';
+import notificationService from '../services/notification.service.js';
+import jwt from 'jsonwebtoken';
+
 class UserController {
   /**
    * Registers a new user.
@@ -256,7 +258,7 @@ class UserController {
         const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
         if (refreshToken) {
           try {
-            const decoded = require('jsonwebtoken').decode(refreshToken);
+            const decoded = jwt.decode(refreshToken);
             if (decoded?.user?.id) {
               await UserService.revokeRefreshToken(decoded.user.id);
             }
@@ -284,4 +286,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+export default new UserController();

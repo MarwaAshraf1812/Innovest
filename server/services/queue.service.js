@@ -1,4 +1,4 @@
-const { EventEmitter } = require('events');
+import { EventEmitter } from 'events';
 
 /**
  * Enterprise Background Queue Manager
@@ -97,4 +97,4 @@ class QueueService extends EventEmitter {
 // Singleton instance export
 const queueService = new QueueService();
 
-module.exports = queueService;
+export default queueService;

@@ -26,4 +26,4 @@ const validatePayload = (schema, source = 'body') => {
   };
 };
 
-module.exports = validatePayload;
+export default validatePayload;

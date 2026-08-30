@@ -1,10 +1,11 @@
-const express = require('express');
-const CommunityController = require('../controllers/community.controller');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const checkRole = require('../middlewares/role.middleware');
-const validatePayload = require('../middlewares/validatePayload.middleware');
-const { createcommunityValidationSchema } = require('../db/validators/communityValidator');
+import express from 'express';
+import CommunityController from '../controllers/community.controller.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import checkRole from '../middlewares/role.middleware.js';
+import validatePayload from '../middlewares/validatePayload.middleware.js';
+import { createcommunityValidationSchema } from '../db/validators/communityValidator.js';
+
 const router = express.Router();
 
 // Community Management Routes
@@ -51,4 +52,4 @@ router.get('/',
   checkPermissions(['VIEW_COMMUNITY']),
   CommunityController.getAllCommunities);
 
-module.exports = router;
+export default router;

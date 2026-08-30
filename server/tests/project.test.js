@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const Project = require('../db/models/projectModel');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import Project from '../db/models/projectModel.js';
 
 describe('Project Schema Insertion', () => {
   let mongoServer;
@@ -9,10 +9,7 @@ describe('Project Schema Insertion', () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
 
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(uri);
   });
 
   afterAll(async () => {

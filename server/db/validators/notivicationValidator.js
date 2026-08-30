@@ -1,7 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-
-const createNotivicationValidationSchema= Joi.object({
+export const createNotivicationValidationSchema = Joi.object({
     notification_id: Joi.string().hex().length(24).required(), 
     content:Joi.string().required(),
     type:Joi.string().hex().length(24).required(),  
@@ -9,5 +8,4 @@ const createNotivicationValidationSchema= Joi.object({
     user_id: Joi.string().hex().length(24).optional()
 });
 
-
-module.exports = {createNotivicationValidationSchema };
+export default { createNotivicationValidationSchema };

@@ -1,8 +1,8 @@
-const Community = require('../db/models/communityModel');
-const PageService = require('../services/page.service');
-const { getIo } = require('../config/socket');
-const Page = require('../db/models/pageModel');
-const mongoose = require('mongoose');
+import Community from '../db/models/communityModel.js';
+import PageService from '../services/page.service.js';
+import { getIo } from '../config/socket.js';
+import Page from '../db/models/pageModel.js';
+import mongoose from 'mongoose';
 
 class PageController {
 
@@ -270,4 +270,4 @@ class PageController {
   }
 }
 
-module.exports = new PageController();
+export default new PageController();

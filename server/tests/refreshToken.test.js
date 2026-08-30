@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const UserService = require('../services/user_auth.service');
-const { User } = require('../db/models/userModel');
-const crypto = require('crypto');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import UserService from '../services/user_auth.service.js';
+import { User } from '../db/models/userModel.js';
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 describe('Refresh Token Invalidation & Security Test', () => {
   let mongoServer;
@@ -33,7 +34,6 @@ describe('Refresh Token Invalidation & Security Test', () => {
       is_verified: true,
       phone: '0101234567'
     });
-    const bcrypt = require('bcryptjs');
     user.password = await bcrypt.hash('password123', 10);
     await user.save();
 

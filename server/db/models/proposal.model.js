@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const proposalSchema = new mongoose.Schema({
   project_id: { type: String, ref: 'Project', required: true },
@@ -38,10 +38,10 @@ const proposalRecipientSchema = new mongoose.Schema({
 proposalSchema.index({ entrepreneur_id: 1, status: 1 });
 proposalRecipientSchema.index({ proposal_id: 1, investor_id: 1, status: 1 });
 
-const Proposal = mongoose.model('Proposal', proposalSchema);
-const ProposalRecipient = mongoose.model('ProposalRecipient', proposalRecipientSchema);
+export const Proposal = mongoose.models.ProposalLegacy || mongoose.model('ProposalLegacy', proposalSchema);
+export const ProposalRecipient = mongoose.models.ProposalRecipient || mongoose.model('ProposalRecipient', proposalRecipientSchema);
 
-module.exports = {
+export default {
   Proposal,
   ProposalRecipient
 };

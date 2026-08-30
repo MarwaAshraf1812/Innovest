@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { addUserToPendingUsers, approveUserToJoinCommunity } = require('../../controllers/community.controller');
+import mongoose from 'mongoose';
+import CommunityController from '../../controllers/community.controller.js';
 
 /**
  * Community Administrative Socket Handlers
@@ -15,7 +15,7 @@ const registerCommunityHandlers = (io, socket) => {
       console.log('Received communityId:', communityId);
       console.log('Received userId:', userId);
 
-      await addUserToPendingUsers(communityId, userId, socket);
+      await CommunityController.addUserToPendingUsers(communityId, userId, socket);
 
       io.emit('newJoinRequest', { communityId, userId });
       socket.emit('joinRequestPending', 'Your request is pending approval.');
@@ -31,7 +31,7 @@ const registerCommunityHandlers = (io, socket) => {
         return socket.emit('error', 'Invalid community ID or user ID format.');
       }
 
-      await approveUserToJoinCommunity(communityId, userId, socket);
+      await CommunityController.approveUserToJoinCommunity(communityId, userId, socket);
       io.emit('joinRequestApproved', { communityId, userId });
       socket.emit('joinRequestApproved', { communityId, userId, message: 'User approved successfully.' });
     } catch (error) {
@@ -41,4 +41,4 @@ const registerCommunityHandlers = (io, socket) => {
   });
 };
 
-module.exports = registerCommunityHandlers;
+export default registerCommunityHandlers;

@@ -1,4 +1,4 @@
-class DocumentDTO {
+export class DocumentDTO {
     constructor(document_id, file_name, file_url, project_id, created_at, updated_at) {
         this.document_id = document_id || null; 
         this.file_name = file_name;             
@@ -9,7 +9,7 @@ class DocumentDTO {
     }
 }
 
-class UpdatedDocumentDTO {
+export class UpdatedDocumentDTO {
     constructor(document_id, file_name, file_url, project_id, updated_at) {
         this.document_id = document_id;    
         this.file_name = file_name || null; 
@@ -19,6 +19,4 @@ class UpdatedDocumentDTO {
     }
 }
 
-
-
-module.exports = { DocumentDTO, UpdatedDocumentDTO };
+export default { DocumentDTO, UpdatedDocumentDTO };

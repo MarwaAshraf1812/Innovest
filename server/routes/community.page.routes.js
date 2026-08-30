@@ -1,16 +1,16 @@
-const express = require('express');
-const PageController = require('../controllers/page.controller');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const checkRole = require('../middlewares/role.middleware');
-const pageController = require('../controllers/page.controller');
+import express from 'express';
+import PageController from '../controllers/page.controller.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import checkRole from '../middlewares/role.middleware.js';
+
 const router = express.Router();
 
 // Page Management Routes within Community
 router.get('/community-pages/pending-pages',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
-  pageController.getPendingPages);
+  PageController.getPendingPages);
 
 router.get('/pages/search-pages',
   AuthMiddleware(),
@@ -55,8 +55,4 @@ router.post('/:community_id/reject/:page_id',
   checkPermissions(['REJECT_PAGE']),
   PageController.rejectPage);
 
-
-
-
-
-module.exports = router;
+export default router;

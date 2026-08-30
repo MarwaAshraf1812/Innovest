@@ -1,11 +1,7 @@
-const express = require('express');
-const likeRoutes = require('../routes/like.routes');
+import express from 'express';
+import likeRoutes from '../routes/like.routes.js';
 
 const router = express.Router();
+router.use('/likes', likeRoutes);
 
-const likeModule = () => {
-  router.use('/like', likeRoutes);
-  return router;
-};
-
-module.exports = likeModule;
+export default router;

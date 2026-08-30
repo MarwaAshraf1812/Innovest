@@ -1,4 +1,4 @@
-class UpdatePageDTO {
+export class UpdatePageDTO {
   constructor(pageData) {
     this.title = pageData.title;
     this.content = pageData.content;
@@ -18,4 +18,4 @@ class UpdatePageDTO {
   }
 }
 
-module.exports = UpdatePageDTO;
+export default UpdatePageDTO;

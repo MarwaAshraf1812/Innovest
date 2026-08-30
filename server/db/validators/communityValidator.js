@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-const createcommunityValidationSchema = Joi.object({
+export const createcommunityValidationSchema = Joi.object({
   community_name: Joi.string().max(100).required(),
   description: Joi.string().required(),
   image: Joi.string().uri().optional(),
@@ -9,4 +9,4 @@ const createcommunityValidationSchema = Joi.object({
   tags: Joi.array().items(Joi.string()).optional()
 });
 
-module.exports = { createcommunityValidationSchema };
+export default { createcommunityValidationSchema };

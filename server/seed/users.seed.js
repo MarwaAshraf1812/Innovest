@@ -1,11 +1,14 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const { User } = require('../db/models/userModel');
-const Admin = require('../db/models/adminModel');
-require('dotenv').config();
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { User } from '../db/models/userModel.js';
+import Admin from '../db/models/adminModel.js';
+import dotenv from 'dotenv';
+import { adminPermissionsEnum } from '../db/models/permissionsEnum.js';
+
+dotenv.config();
 
 // Use the database name with a capital 'I' as already initialized on disk
-const MONGO_URI = 'mongodb://localhost:27017/Innovest';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/Innovest';
 
 async function seedUsers() {
   try {
@@ -22,8 +25,6 @@ async function seedUsers() {
     console.log('Cleaning up existing seed records...');
     await Admin.deleteOne({ username: 'admin' });
     await User.deleteMany({ username: { $in: ['omarhassan', 'sarahjenkins'] } });
-
-    const { adminPermissionsEnum } = require('../db/models/permissionsEnum');
 
     // 2. Seed Admin User
     const newAdmin = new Admin({

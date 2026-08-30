@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const { getIo } = require('../config/socket');
-const LikeService = require('../services/like.service');
-const PageService = require('../services/page.service');
-const notificationService = require('../services/notification.service');
+import mongoose from 'mongoose';
+import { getIo } from '../config/socket.js';
+import LikeService from '../services/like.service.js';
+import PageService from '../services/page.service.js';
+import notificationService from '../services/notification.service.js';
 
 class LikeController {
   /**
@@ -104,4 +104,4 @@ class LikeController {
   }
 }
 
-module.exports = new LikeController();
+export default new LikeController();

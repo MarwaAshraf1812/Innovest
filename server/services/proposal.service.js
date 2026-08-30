@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const Proposal = require('../db/models/proposalModel');
-const Project = require('../db/models/projectModel');
-const Investment = require('../db/models/investmentModel');
-const { User } = require('../db/models/userModel');
-const NotificationService = require('./notification.service');
+import mongoose from 'mongoose';
+import Proposal from '../db/models/proposalModel.js';
+import Project from '../db/models/projectModel.js';
+import Investment from '../db/models/investmentModel.js';
+import { User } from '../db/models/userModel.js';
+import NotificationService from './notification.service.js';
 
 class ProposalService {
   async createProposal(userId, { project_id, amount, equity_offered, conditions }) {
@@ -385,4 +385,4 @@ class ProposalService {
   }
 }
 
-module.exports = new ProposalService();
+export default new ProposalService();

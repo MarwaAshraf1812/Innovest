@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { adminPermissionsEnum } from './permissionsEnum.js';
+import validator from 'validator';
+
 const { Schema } = mongoose;
-const { v4: uuidv4 } = require('uuid');
-const { adminPermissionsEnum } = require('./permissionsEnum');
-const validator = require('validator');
 
 const AdminSchema = new Schema(
   {
@@ -47,6 +48,5 @@ AdminSchema.set('toJSON', {
   }
 });
 
-
 const Admin = mongoose.model('Admin', AdminSchema);
-module.exports = Admin;
+export default Admin;

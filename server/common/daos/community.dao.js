@@ -1,7 +1,7 @@
-const Community = require('../../db/models/communityModel');
-const { v4: uuidv4 } = require('uuid');
-const CommunityUsers = require('../../db/models/communityUsersModel');
-const { User } = require('../../db/models/userModel');
+import Community from '../../db/models/communityModel.js';
+import { v4 as uuidv4 } from 'uuid';
+import CommunityUsers from '../../db/models/communityUsersModel.js';
+import { User } from '../../db/models/userModel.js';
 
 class CommunityDAO {
   /**
@@ -200,7 +200,7 @@ class CommunityDAO {
       
       const enriched = await Promise.all(pendingUsers.map(async (entry) => {
         const userObj = await User.findOne({ id: entry.user_id }).select('first_name last_name username email role');
-        const commObj = await require('../../db/models/communityModel').findOne({ community_id: entry.community_id }).select('community_name');
+        const commObj = await Community.findOne({ community_id: entry.community_id }).select('community_name');
         return {
           id: entry._id,
           user_id: entry.user_id,
@@ -271,7 +271,7 @@ class CommunityDAO {
       return await CommunityUsers.findOneAndDelete({
         community_id: communityId,
         user_id: userId
-      })
+      });
     } catch (error) {
       console.error('Error rejecting user to join community:', error);
       throw new Error('Error rejecting user to join community: ' + error.message);
@@ -317,7 +317,6 @@ class CommunityDAO {
       throw new Error('Error removing user from community: ' + error.message);
     }
   }
-
 
   /**
    * Retrieves the users of a community
@@ -402,4 +401,4 @@ class CommunityDAO {
   }
 }
 
-module.exports = new CommunityDAO();
+export default new CommunityDAO();

@@ -1,7 +1,7 @@
-const Project = require('../../db/models/projectModel');
-const { User } = require('../../db/models/userModel');
+import Project from '../../db/models/projectModel.js';
+import { User } from '../../db/models/userModel.js';
 
-const ProjectDAO = {
+export const ProjectDAO = {
   /**
    * Creates a new project in the database and adds it to the associated user's projects list
    * @param {Object} projectData - The data for the project to be created
@@ -198,7 +198,7 @@ const ProjectDAO = {
         { project_id: projectId },
         { $set: { approved: 'rejected' } },
         { new: true },
-      )
+      );
       return project;
     } catch (error) {
       throw new Error('Error rejecting project in dao: ' + error.message);
@@ -206,4 +206,4 @@ const ProjectDAO = {
   }
 };
 
-module.exports = ProjectDAO;
+export default ProjectDAO;

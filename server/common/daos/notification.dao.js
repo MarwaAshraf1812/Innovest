@@ -1,4 +1,4 @@
-const Notification = require('../../db/models/notificationModel');
+import Notification from '../../db/models/notificationModel.js';
 
 class NotificationDAO {
   /**
@@ -31,4 +31,4 @@ class NotificationDAO {
   }
 }
 
-module.exports = new NotificationDAO();
+export default new NotificationDAO();

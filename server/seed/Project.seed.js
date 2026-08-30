@@ -1,8 +1,11 @@
-const mongoose = require('mongoose');
-const Project = require('../db/models/projectModel');
-const { User } = require('../db/models/userModel');
+import mongoose from 'mongoose';
+import Project from '../db/models/projectModel.js';
+import { User } from '../db/models/userModel.js';
+import dotenv from 'dotenv';
 
-const dbURI = "mongodb://localhost:27017/Innovest";
+dotenv.config();
+
+const dbURI = process.env.MONGO_URI || "mongodb://localhost:27017/Innovest";
 
 mongoose.connect(dbURI)
   .then(() => {

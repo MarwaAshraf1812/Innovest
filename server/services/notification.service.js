@@ -1,6 +1,6 @@
-const NotificationDAO = require('../common/daos/notification.dao');
-const Admin = require('../db/models/adminModel');
-const { getIo } = require('../config/socket');
+import NotificationDAO from '../common/daos/notification.dao.js';
+import Admin from '../db/models/adminModel.js';
+import { getIo } from '../config/socket.js';
 
 class NotificationService {
 
@@ -43,15 +43,6 @@ class NotificationService {
    * @returns {Promise<Notification>} - The created notification.
    * @throws {Error} - If the admin user could not be found or the notification could not be created.
    */
-
-  /**
-   * Notifies an admin user with a notification of the given type and data.
-   * @param {string} adminId - The ID of the admin user to notify.
-   * @param {string} type - The type of the notification.
-   * @param {Object} data - The data for the notification.
-   * @returns {Promise<Notification>} - The created notification.
-   * @throws {Error} - If the admin user could not be found or the notification could not be created.
-   */
   async notifyAdmin(adminId, type, data) {
     try {
       const admin = await Admin.findOne({admin_id: adminId});
@@ -79,4 +70,4 @@ class NotificationService {
   }
 }
 
-module.exports = new NotificationService();
+export default new NotificationService();

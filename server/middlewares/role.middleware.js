@@ -1,5 +1,5 @@
-const { User } = require('../db/models/userModel');
-const Admin = require('../db/models/adminModel');
+import { User } from '../db/models/userModel.js';
+import Admin from '../db/models/adminModel.js';
 
 const checkRole = (roles) => {
     return async (req, res, next) => {
@@ -41,4 +41,4 @@ const checkRole = (roles) => {
     };
 };
 
-module.exports = checkRole;
+export default checkRole;

@@ -1,15 +1,11 @@
-const { Router } = require('express');
-const communityRoutes = require('../routes/community.routes');
-const communityUserRoutes = require('../routes/community.user.routes');
-const communityPageRoutes = require('../routes/community.page.routes');
+import { Router } from 'express';
+import communityRoutes from '../routes/community.routes.js';
+import communityUserRoutes from '../routes/community.user.routes.js';
+import communityPageRoutes from '../routes/community.page.routes.js';
 
-const communityModule = () => {
-  const router = Router();
-  router.use('/community', communityRoutes);
-  router.use('/community', communityUserRoutes);
-  router.use('/community', communityPageRoutes);
+const router = Router();
+router.use('/communities', communityRoutes);
+router.use('/communities', communityUserRoutes);
+router.use('/communities', communityPageRoutes);
 
-  return router;
-};
-
-module.exports = communityModule;
+export default router;

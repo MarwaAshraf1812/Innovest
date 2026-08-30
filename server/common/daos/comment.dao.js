@@ -1,6 +1,6 @@
-const Comment = require('../../db/models/commentModel');
-const Page = require('../../db/models/pageModel');
-const { User } = require('../../db/models/userModel');
+import Comment from '../../db/models/commentModel.js';
+import Page from '../../db/models/pageModel.js';
+import { User } from '../../db/models/userModel.js';
 
 class CommentDAO {
   /**
@@ -108,7 +108,6 @@ class CommentDAO {
     }
   }
 
-
   /**
    * Updates a comment by its ID and the ID of the user who made it, replacing
    * its content with the provided string. If the comment is successfully
@@ -141,4 +140,4 @@ class CommentDAO {
   }
 }
 
-module.exports = new CommentDAO();
+export default new CommentDAO();

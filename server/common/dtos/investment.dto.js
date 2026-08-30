@@ -1,4 +1,4 @@
-class InvestmentDTO {
+export class InvestmentDTO {
     constructor(invest_id, created_at, budget_amount, name, investor_id, project_id) {
         this.invest_id = invest_id;
         this.created_at = created_at;
@@ -9,4 +9,4 @@ class InvestmentDTO {
     }
 }
 
-module.exports = InvestmentDTO;
+export default InvestmentDTO;

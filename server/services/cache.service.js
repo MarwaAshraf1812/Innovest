@@ -77,4 +77,4 @@ class CacheService {
 }
 
 const cacheService = new CacheService();
-module.exports = cacheService;
+export default cacheService;

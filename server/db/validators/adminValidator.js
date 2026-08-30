@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const adminValidationSchema = Joi.object({
     first_name: Joi.string()
@@ -66,4 +66,4 @@ const adminValidationSchema = Joi.object({
         .default([]),
 });
 
-module.exports = adminValidationSchema;
+export default adminValidationSchema;

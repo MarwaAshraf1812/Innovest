@@ -1,7 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 // Create Message Validation Schema
-const createMessageValidationSchema = Joi.object({
+export const createMessageValidationSchema = Joi.object({
   message_id: Joi.string().optional(), 
   sender_id: Joi.string().optional(),   
   receiver_id: Joi.string().required(), 
@@ -11,7 +11,7 @@ const createMessageValidationSchema = Joi.object({
 });
 
 // Update Message Validation Schema
-const updateMessageValidationSchema = Joi.object({
+export const updateMessageValidationSchema = Joi.object({
   message_id: Joi.string().optional(), 
   sender_id: Joi.string().optional(),   
   receiver_id: Joi.string().optional(), 
@@ -19,4 +19,4 @@ const updateMessageValidationSchema = Joi.object({
   updated_at: Joi.date().optional(),    
 });
 
-module.exports = { createMessageValidationSchema, updateMessageValidationSchema };
+export default { createMessageValidationSchema, updateMessageValidationSchema };

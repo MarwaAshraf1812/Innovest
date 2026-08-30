@@ -1,8 +1,10 @@
-const UserService = require('../services/user.service');
-const { User } = require('../db/models/userModel');
-const Project = require('../db/models/projectModel');
-const CommunityUsers = require('../db/models/communityUsersModel');
-const Investment = require('../db/models/investmentModel');
+import UserService from '../services/user.service.js';
+import { User } from '../db/models/userModel.js';
+import Project from '../db/models/projectModel.js';
+import CommunityUsers from '../db/models/communityUsersModel.js';
+import Investment from '../db/models/investmentModel.js';
+import NotificationService from '../services/notification.service.js';
+import Notification from '../db/models/notificationModel.js';
 
 class UserController {
   /**
@@ -182,7 +184,6 @@ class UserController {
   async getNotifications(req, res) {
     try {
       const userId = req.user.id;
-      const NotificationService = require('../services/notification.service');
       const notifications = await NotificationService.getNotificationsForUser(userId);
       return res.status(200).json(notifications);
     } catch (error) {
@@ -194,7 +195,6 @@ class UserController {
     try {
       const userId = req.user.id;
       const { notification_id } = req.params;
-      const Notification = require('../db/models/notificationModel');
       const notification = await Notification.findOneAndUpdate(
         { _id: notification_id, user_id: userId },
         { read: true },
@@ -212,7 +212,6 @@ class UserController {
   async markAllNotificationsAsRead(req, res) {
     try {
       const userId = req.user.id;
-      const Notification = require('../db/models/notificationModel');
       await Notification.updateMany({ user_id: userId, read: false }, { read: true });
       return res.status(200).json({ message: 'All notifications marked as read' });
     } catch (error) {
@@ -221,4 +220,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+export default new UserController();

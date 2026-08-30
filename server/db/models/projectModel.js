@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
-
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 const projectSchema = new mongoose.Schema({
   project_id:{ type: String, default: uuidv4, unique: true },	 
@@ -30,7 +29,5 @@ const projectSchema = new mongoose.Schema({
 
 projectSchema.index({ entrepreneur_id: 1 });
 
-
-const Project = mongoose.model('Project', projectSchema)
-module.exports = Project;
-
+const Project = mongoose.models.Project || mongoose.model('Project', projectSchema);
+export default Project;

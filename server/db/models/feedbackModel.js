@@ -1,4 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+
 const { Schema } = mongoose;
 
 const feedbackSchema = new Schema({
@@ -15,4 +17,4 @@ const feedbackSchema = new Schema({
 // Creating the Feedback model
 const Feedback = mongoose.model('Feedback', feedbackSchema);
 
-module.exports = Feedback;
+export default Feedback;

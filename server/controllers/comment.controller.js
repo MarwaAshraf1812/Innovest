@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const { getIo } = require('../config/socket');
-const CommentService = require('../services/comment.service');
-const notificationService = require('../services/notification.service');
+import mongoose from 'mongoose';
+import { getIo } from '../config/socket.js';
+import CommentService from '../services/comment.service.js';
+import notificationService from '../services/notification.service.js';
 
 class CommentController {
   /**
@@ -105,4 +105,4 @@ class CommentController {
   }
 }
 
-module.exports = new CommentController();
+export default new CommentController();

@@ -1,5 +1,9 @@
-const ProjectDAO = require('../common/daos/project.dao');
-
+import ProjectDAO from '../common/daos/project.dao.js';
+import FileManagement from './file_management.service.js';
+import path from 'path';
+import Proposal from '../db/models/proposalModel.js';
+import Investment from '../db/models/investmentModel.js';
+import { User } from '../db/models/userModel.js';
 
 const ProjectService = {
 
@@ -21,8 +25,6 @@ const ProjectService = {
    * @throws {Error} If the project couldn't be found
    */
   async updateProject(projectId, updateData) {
-    const FileManagement = require('./file_management.service');
-    const path = require('path');
     const existingProject = await ProjectDAO.getProjectById(projectId);
     const project = await ProjectDAO.updateProject(projectId, updateData);
     if (!project) {
@@ -47,7 +49,6 @@ const ProjectService = {
    * @throws {Error} If the project couldn't be found.
    */
   async deleteProject(projectId) {
-    const FileManagement = require('./file_management.service');
     const project = await ProjectDAO.deleteProject(projectId);
     if (!project) {
       throw new Error('Project not found');
@@ -154,10 +155,6 @@ const ProjectService = {
 
     // 3. Investor access (active/accepted proposal OR expression of interest)
     if (user.role === 'INVESTOR') {
-      const Proposal = require('../db/models/proposalModel');
-      const Investment = require('../db/models/investmentModel');
-      const { User } = require('../db/models/userModel');
-
       const proposal = await Proposal.findOne({
         project_id: project.project_id,
         investor_id: user.id,
@@ -179,4 +176,4 @@ const ProjectService = {
   }
 };
 
-module.exports = ProjectService;
+export default ProjectService;

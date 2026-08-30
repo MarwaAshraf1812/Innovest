@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const documentSchema = new mongoose.Schema({
    document_id: {type: String, required: true, default: mongoose.Types.ObjectId, unique: true},
@@ -9,6 +9,5 @@ const documentSchema = new mongoose.Schema({
 
 documentSchema.index({ project_id: 1 });
 
-
 const Document = mongoose.model('Document', documentSchema);
-module.exports = Document;
+export default Document;

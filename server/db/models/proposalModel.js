@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+
 const { Schema } = mongoose;
-const { v4: uuidv4 } = require('uuid');
 
 const proposalHistorySchema = new Schema({
   terms: {
@@ -47,5 +48,5 @@ const proposalSchema = new Schema({
 
 proposalSchema.index({ project_id: 1, investor_id: 1 });
 
-const Proposal = mongoose.model('Proposal', proposalSchema);
-module.exports = Proposal;
+const Proposal = mongoose.models.Proposal || mongoose.model('Proposal', proposalSchema);
+export default Proposal;

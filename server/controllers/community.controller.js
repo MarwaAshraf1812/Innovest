@@ -1,8 +1,10 @@
-const CommunityServices = require('../services/community.service');
-const {
+import CommunityServices from '../services/community.service.js';
+import {
   CreateCommunityDTO,
   UpdateCommunityDTO,
-} = require('../common/dtos/communityDTO/community.dto');
+} from '../common/dtos/communityDTO/community.dto.js';
+import CommunityUsers from '../db/models/communityUsersModel.js';
+import NotificationService from '../services/notification.service.js';
 
 class CommunityController {
   /**
@@ -197,7 +199,6 @@ class CommunityController {
   async getMyMemberships(req, res) {
     try {
       const userId = req.user.id;
-      const CommunityUsers = require('../db/models/communityUsersModel');
       const memberships = await CommunityUsers.find({ user_id: userId });
       return res.status(200).json(memberships || []);
     } catch (error) {
@@ -235,7 +236,6 @@ class CommunityController {
         await community.save();
         
         try {
-          const NotificationService = require('../services/notification.service');
           await NotificationService.notifyUser(user_id, 'communityJoinApproved', {
             community_id,
             community_name: community.community_name,
@@ -276,7 +276,6 @@ class CommunityController {
       );
 
       try {
-        const NotificationService = require('../services/notification.service');
         await NotificationService.notifyUser(user_id, 'communityJoinRejected', {
           community_id,
           community_name: community?.community_name || 'Community',
@@ -387,4 +386,4 @@ class CommunityController {
   }
 }
 
-module.exports = new CommunityController();
+export default new CommunityController();

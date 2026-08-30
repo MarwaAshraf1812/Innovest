@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const CommunityPagesSchema = new mongoose.Schema({
     community_id: { type: String, ref: 'Community', required: true },
@@ -18,4 +18,4 @@ const CommunityPagesSchema = new mongoose.Schema({
 CommunityPagesSchema.index({ community_id: 1, page_id: 1 }, { unique: true });
 
 const CommunityPages = mongoose.model('CommunityPages', CommunityPagesSchema);
-module.exports = CommunityPages;
+export default CommunityPages;

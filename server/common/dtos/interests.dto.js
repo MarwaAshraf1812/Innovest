@@ -1,4 +1,4 @@
-class CreateInterestDTO {
+export class CreateInterestDTO {
   constructor(interest) {
     this.id = interest.id;
     this.name = interest.name;
@@ -9,11 +9,11 @@ class CreateInterestDTO {
   }
 
   validate() {
-    // Provide specific feedback on missing required fields
     if (!this.name) throw new Error('Name is required');
   }
 }
-class UpdateInterestDTO {
+
+export class UpdateInterestDTO {
   constructor(interest) {
     this.id = interest._id;
     this.name = interest.name || null;
@@ -27,6 +27,4 @@ class UpdateInterestDTO {
   }
 }
 
-
-
-module.exports = { CreateInterestDTO, UpdateInterestDTO };
+export default { CreateInterestDTO, UpdateInterestDTO };

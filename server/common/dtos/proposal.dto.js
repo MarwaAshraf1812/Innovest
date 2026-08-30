@@ -1,10 +1,10 @@
-class proposalDTO {
+export class proposalDTO {
   static fromRequest(proposalData){
     return {
       project_id: proposalData.project_id,
       investor_id: proposalData.investor_id,
       title: proposalData.title,
-      amount_requested: proposalDataData.amount,
+      amount_requested: proposalData.amount,
       milestones: proposalData.milestones,
       benefits: proposalData.benefits,
       terms: proposalData.terms,
@@ -25,7 +25,7 @@ class proposalDTO {
       created_at: proposalData.created_at,
       updated_at: proposalData.updated_at,
     };
-};
+  }
 }
 
-module.exports = proposalDTO;
+export default proposalDTO;

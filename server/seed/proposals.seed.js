@@ -1,10 +1,13 @@
-const mongoose = require('mongoose');
-const { User } = require('../db/models/userModel');
-const Project = require('../db/models/projectModel');
-const Proposal = require('../db/models/proposalModel');
-const { v4: uuidv4 } = require('uuid');
+import mongoose from 'mongoose';
+import { User } from '../db/models/userModel.js';
+import Project from '../db/models/projectModel.js';
+import Proposal from '../db/models/proposalModel.js';
+import { v4 as uuidv4 } from 'uuid';
+import dotenv from 'dotenv';
 
-const MONGO_URI = 'mongodb://localhost:27017/Innovest';
+dotenv.config();
+
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/Innovest';
 
 async function seedProposals() {
   try {

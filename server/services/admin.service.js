@@ -1,5 +1,6 @@
-const adminDao = require('../common/daos/admin.dao');
-const bycrypt = require('bcryptjs');
+import adminDao from '../common/daos/admin.dao.js';
+import bycrypt from 'bcryptjs';
+
 /**
  * AdminServices class provides methods for managing admin users.
  * It interacts with the adminDao to perform CRUD operations on admin data.
@@ -73,4 +74,4 @@ class AdminServices {
   }
 }
 
-module.exports = new AdminServices();
+export default new AdminServices();

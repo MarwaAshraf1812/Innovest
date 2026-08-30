@@ -1,5 +1,22 @@
-const { initSocketServer } = require('./sockets');
-const { apiRateLimiter, authRateLimiter } = require('./middlewares/rateLimiter');
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+
+import dbConection from './db/config/dbConnection.js';
+import { initSocketServer } from './sockets/index.js';
+import { apiRateLimiter, authRateLimiter } from './middlewares/rateLimiter.js';
+
+import adminModule from './modules/admin.module.js';
+import communityModule from './modules/community.module.js';
+import userModule from './modules/user.module.js';
+import messageModule from './modules/message.module.js';
+import likeModule from './modules/like.module.js';
+import commentModule from './modules/comment.module.js';
+import ProjectModule from './modules/project.module.js';
+import proposalModule from './modules/proposal.module.js';
 
 dotenv.config();
 const app = express();
@@ -32,7 +49,7 @@ app.use(cors({
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(require('cookie-parser')());
+app.use(cookieParser());
 
 // Apply Rate Limiters
 app.use('/api/', apiRateLimiter);
@@ -40,18 +57,19 @@ app.use('/api/user/login', authRateLimiter);
 app.use('/api/user/signup', authRateLimiter);
 
 // Routes
-app.use('/api', adminModule());
-app.use('/api', communityModule());
-app.use('/api', userModule());
-app.use('/api', messageModule());
-app.use('/api', likeModule());
-app.use('/api', commentModule());
-app.use('/api', ProjectModule());
-app.use('/api', proposalModule());
-
+app.use('/api', adminModule);
+app.use('/api', communityModule);
+app.use('/api', userModule);
+app.use('/api', messageModule);
+app.use('/api', likeModule);
+app.use('/api', commentModule);
+app.use('/api', ProjectModule);
+app.use('/api', proposalModule);
 
 // Start the server
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
   console.log(`server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
+
+export default app;

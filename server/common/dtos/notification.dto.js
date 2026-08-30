@@ -1,5 +1,4 @@
-
- class notificationDTO{
+export class notificationDTO {
   constructor(notification){
     this.id=notification.id;
     this.content=notification.content;
@@ -10,10 +9,8 @@
     this.user_id = notification.user_id;
   }
   validate() {
-    // Provide specific notification on missing required fields
     if (!this.name) throw new Error('Name is required');
   }
+}
 
- }
-
- module.exports = notificationDTO;
+export default notificationDTO;

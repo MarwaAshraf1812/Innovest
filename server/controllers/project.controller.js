@@ -1,8 +1,10 @@
-const ProjectService = require('../services/project.service');
-const ProjectDTO = require('../common/dtos/project.dto');
-const FileManagement = require('../services/file_management.service');
-const Investment = require('../db/models/investmentModel');
-
+import ProjectService from '../services/project.service.js';
+import ProjectDTO from '../common/dtos/project.dto.js';
+import FileManagement from '../services/file_management.service.js';
+import Investment from '../db/models/investmentModel.js';
+import NotificationService from '../services/notification.service.js';
+import { User } from '../db/models/userModel.js';
+import path from 'path';
 
 const ProjectController = {
   /**
@@ -108,7 +110,6 @@ const ProjectController = {
   async downloadProjectDocument(req, res) {
     try {
       const { project_id, filename } = req.params;
-      const path = require('path');
       const project = await ProjectService.getProjectById(project_id);
       if (!project) {
         return res.status(404).json({ message: 'Project not found' });
@@ -293,7 +294,6 @@ const ProjectController = {
       }
       
       try {
-        const NotificationService = require('../services/notification.service');
         await NotificationService.notifyUser(approvedProject.entrepreneur_id, 'pitchApproved', {
           project_id: approvedProject.project_id,
           project_name: approvedProject.project_name,
@@ -326,7 +326,6 @@ const ProjectController = {
       }
 
       try {
-        const NotificationService = require('../services/notification.service');
         await NotificationService.notifyUser(rejectedProject.entrepreneur_id, 'pitchRejected', {
           project_id: rejectedProject.project_id,
           project_name: rejectedProject.project_name,
@@ -360,7 +359,6 @@ const ProjectController = {
       }
 
       // Find the Mongoose ObjectId of the investor
-      const { User } = require('../db/models/userModel');
       const investorUser = await User.findOne({ id: investorId });
       if (!investorUser) return res.status(404).json({ message: 'Investor user not found' });
 
@@ -381,7 +379,6 @@ const ProjectController = {
 
       // Notify the entrepreneur about investor's interest
       try {
-        const NotificationService = require('../services/notification.service');
         const investorName = `${investorUser.first_name || ''} ${investorUser.last_name || ''}`.trim() || investorUser.username;
 
         await NotificationService.notifyUser(project.entrepreneur_id, 'expressionOfInterest', {
@@ -408,7 +405,6 @@ const ProjectController = {
   async getMyInterests(req, res) {
     try {
       const investorId = req.user.id;
-      const { User } = require('../db/models/userModel');
       const investorUser = await User.findOne({ id: investorId });
       if (!investorUser) return res.status(404).json({ message: 'Investor user not found' });
 
@@ -432,4 +428,4 @@ const ProjectController = {
   }
 };
 
-module.exports = ProjectController;
+export default ProjectController;

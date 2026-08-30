@@ -1,7 +1,7 @@
-const { createUserValidationSchema } = require('../db/validators/userValidations/createUser.validator');
-const { projectValidationSchema, projectUpdateValidationSchema } = require('../db/validators/projectValidator');
-const { createcommunityValidationSchema } = require('../db/validators/communityValidator');
-const { createMessageValidationSchema } = require('../db/validators/messagesValidator');
+import { createUserValidationSchema } from '../db/validators/userValidations/createUser.validator.js';
+import { projectValidationSchema, projectUpdateValidationSchema } from '../db/validators/projectValidator.js';
+import { createcommunityValidationSchema } from '../db/validators/communityValidator.js';
+import { createMessageValidationSchema } from '../db/validators/messagesValidator.js';
 
 describe('Mutation Routes Payload Smoke Tests (Frontend Shapes)', () => {
   it('1. User Registration payload matching frontend useRegisterForm', () => {

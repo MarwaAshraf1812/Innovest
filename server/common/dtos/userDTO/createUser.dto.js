@@ -1,4 +1,4 @@
-class CreateUserDTO {
+export class CreateUserDTO {
   constructor(user) {
     this.id = user.id; 
     this.first_name = user.first_name; 
@@ -42,9 +42,8 @@ class CreateUserDTO {
       throw new Error('Nationality ID must be a number');
     }
     
-    // Optional: Validate phone number format if you expect a specific pattern
     if (this.phone && !/^\d{10,15}$/.test(this.phone)) throw new Error('Invalid phone number');
   }  
 }
 
-module.exports = { CreateUserDTO };
+export default { CreateUserDTO };

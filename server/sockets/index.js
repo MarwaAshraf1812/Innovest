@@ -1,13 +1,13 @@
-const socketConfig = require('../config/socket');
-const registerDirectMessageHandlers = require('./handlers/directMessage.handler');
-const registerCommunityHandlers = require('./handlers/community.handler');
-const registerNotificationHandlers = require('./handlers/notification.handler');
+import socketConfig from '../config/socket.js';
+import registerDirectMessageHandlers from './handlers/directMessage.handler.js';
+import registerCommunityHandlers from './handlers/community.handler.js';
+import registerNotificationHandlers from './handlers/notification.handler.js';
 
 /**
  * Main Socket Manager
  * Decouples socket configuration from Express app.js and enables horizontal scalability.
  */
-const initSocketServer = (server) => {
+export const initSocketServer = (server) => {
   const io = socketConfig.init(server);
 
   // Connection Lifecycle
@@ -27,4 +27,4 @@ const initSocketServer = (server) => {
   return io;
 };
 
-module.exports = { initSocketServer };
+export default { initSocketServer };

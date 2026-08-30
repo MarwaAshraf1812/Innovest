@@ -1,6 +1,6 @@
-const CommentDAO = require('../common/daos/comment.dao');
-const Page = require('../db/models/pageModel');
-const NotificationService = require('../services/notification.service');
+import CommentDAO from '../common/daos/comment.dao.js';
+import Page from '../db/models/pageModel.js';
+import NotificationService from '../services/notification.service.js';
 
 class CommentService {
     /**
@@ -73,8 +73,6 @@ class CommentService {
             throw new Error('Error updating comment: ' + error.message);
         }
     }
-
-    
 }
 
-module.exports = new CommentService();
+export default new CommentService();

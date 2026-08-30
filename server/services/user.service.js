@@ -1,5 +1,4 @@
-const userDao = require('../common/daos/user.dao');
-
+import userDao from '../common/daos/user.dao.js';
 
 class UserServices {
   /**
@@ -27,7 +26,7 @@ class UserServices {
     try {
       return await userDao.deleteUser(userId)
     } catch (error) {
-      throw new ErrorEvent('Error deleting user:' + error.message);
+      throw new Error('Error deleting user:' + error.message);
     }
   }
 
@@ -87,4 +86,4 @@ class UserServices {
   }
 }
 
-module.exports = new UserServices();
+export default new UserServices();

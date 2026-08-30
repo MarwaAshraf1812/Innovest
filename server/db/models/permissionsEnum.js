@@ -1,4 +1,4 @@
-const userPermissionsEnum = [
+export const userPermissionsEnum = [
   "DELETE_USER",
   "UPDATE_USER",
   "VIEW_USER",
@@ -16,7 +16,8 @@ const userPermissionsEnum = [
   "DISLIKE_PAGE",
   "REMOVE_PAGE_FROM_COMMUNITY"
 ];
-const adminPermissionsEnum = [
+
+export const adminPermissionsEnum = [
   "CREATE_USER_OR_ADMIN",
   "DELETE_USER_OR_ADMIN",
   "UPDATE_USER_OR_ADMIN",
@@ -43,7 +44,7 @@ const adminPermissionsEnum = [
   "REMOVE_PAGE_FROM_COMMUNITY"  
 ];
 
-module.exports = {
+export default {
   userPermissionsEnum,
   adminPermissionsEnum
 };

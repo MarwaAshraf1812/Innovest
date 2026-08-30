@@ -1,7 +1,7 @@
-const Admin = require('../../db/models/adminModel');
+import Admin from '../../db/models/adminModel.js';
 
 /**
- * adminDao class provides methods for interacting with admin user data.
+ * AdminDao class provides methods for interacting with admin user data.
  * It performs CRUD operations and handles interactions with the Admin model.
  */
 class AdminDao {
@@ -44,7 +44,6 @@ class AdminDao {
       throw new Error('Error updating admin: ' + error.message);
     }
   }
-
 
   /**
    * Deletes the user with the given id.
@@ -118,6 +117,7 @@ class AdminDao {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
+
   /**
    * Checks if a user is an admin
    * @param {string} admin_id - The unique identifier of the admin
@@ -145,22 +145,21 @@ class AdminDao {
   * @returns {Promise<Admin[]>} - A list of admins that match the search query.
   * @throws {Error} If the admins couldn't be fetched.
   */
-    async searchAdminsByUsername(usernameQuery) {
-      try {
-        const admins = await Admin.find({
-          username: { $regex: usernameQuery, $options: 'i' },
-        });
-  
-        if (admins.length === 0) {
-          return null; // No admins found
-        }
-  
-        return admins;
-      } catch (error) {
-        throw new Error('Error searching admins by username: ' + error.message);
+  async searchAdminsByUsername(usernameQuery) {
+    try {
+      const admins = await Admin.find({
+        username: { $regex: usernameQuery, $options: 'i' },
+      });
+
+      if (admins.length === 0) {
+        return null; // No admins found
       }
+
+      return admins;
+    } catch (error) {
+      throw new Error('Error searching admins by username: ' + error.message);
     }
-  
+  }
 }
 
-module.exports = new AdminDao();
+export default new AdminDao();

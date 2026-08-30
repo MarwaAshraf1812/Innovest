@@ -1,5 +1,5 @@
-const { userPermissionsEnum } = require('../../db/models/permissionsEnum');
-const { User } = require('../../db/models/userModel');
+import { userPermissionsEnum } from '../../db/models/permissionsEnum.js';
+import { User } from '../../db/models/userModel.js';
 
 class UserDao {
   /**
@@ -118,21 +118,6 @@ class UserDao {
   }
 
   /**
-   * Retrieves the user with the given username.
-   * @param {string} username - The username of the user to be retrieved.
-   * @returns {Promise<User>} - The user with the given username.
-   * @throws {Error} If the user couldn't be fetched.
-   */
-  async getUserByUsername(username) {
-    try {
-      return await User.findOne({username: username});
-    } catch (error) {
-      throw new Error('Error fetching user: ' + error.message);
-    }
-  }
-
-
-  /**
    * Searches for users by username.
    * @param {string} usernameQuery - The username to search for.
    * @returns {Promise<User[]>} - A list of users that match the search query.
@@ -163,4 +148,4 @@ class UserDao {
 }
 }
 
-module.exports = new UserDao();
+export default new UserDao();

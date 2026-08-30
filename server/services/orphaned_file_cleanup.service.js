@@ -1,8 +1,8 @@
-const fs = require('fs').promises;
-const path = require('path');
-const Project = require('../db/models/projectModel');
-const { User } = require('../db/models/userModel');
-const FileManagement = require('./file_management.service');
+import fs from 'fs/promises';
+import path from 'path';
+import Project from '../db/models/projectModel.js';
+import { User } from '../db/models/userModel.js';
+import FileManagement from './file_management.service.js';
 
 class OrphanedFileCleanupService {
     /**
@@ -71,4 +71,4 @@ class OrphanedFileCleanupService {
     }
 }
 
-module.exports = new OrphanedFileCleanupService();
+export default new OrphanedFileCleanupService();

@@ -1,10 +1,7 @@
-const { Router } = require('express');
-const projectRoutes = require('../routes/project.routes');
+import { Router } from 'express';
+import projectRoutes from '../routes/project.routes.js';
 
-const projectModule = () => {
-  const router = Router();
-  router.use('/project', projectRoutes);
-  return router;
-}
+const router = Router();
+router.use('/project', projectRoutes);
 
-module.exports = projectModule;
+export default router;

@@ -1,5 +1,5 @@
-const AuditLog = require('../db/models/auditLogModel');
-const queueService = require('../services/queue.service');
+import AuditLog from '../db/models/auditLogModel.js';
+import queueService from '../services/queue.service.js';
 
 // Register queue worker to write audit logs asynchronously without blocking HTTP response
 queueService.registerWorker('writeAuditLog', async (auditData) => {
@@ -13,7 +13,7 @@ queueService.registerWorker('writeAuditLog', async (auditData) => {
 /**
  * Express middleware helper to log critical actions to AuditLog asynchronously.
  */
-const logAudit = (action, resourceType) => {
+export const logAudit = (action, resourceType) => {
   return (req, res, next) => {
     // Capture response finish
     res.on('finish', () => {
@@ -43,4 +43,4 @@ const logAudit = (action, resourceType) => {
   };
 };
 
-module.exports = { logAudit };
+export default { logAudit };

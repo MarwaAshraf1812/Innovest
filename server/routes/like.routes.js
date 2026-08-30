@@ -1,7 +1,7 @@
-const express = require('express');
-const LikeController = require('../controllers/like.controller');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
+import express from 'express';
+import LikeController from '../controllers/like.controller.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
+import { checkPermissions } from '../middlewares/checkPermissions.middleware.js';
 
 const router = express.Router();
 
@@ -29,4 +29,4 @@ router.get('/:page_id/likes',
   checkPermissions(['VIEW_LIKES']),
   LikeController.getLikesByPage);
 
-module.exports = router;
+export default router;

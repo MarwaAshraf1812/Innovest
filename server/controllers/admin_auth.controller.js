@@ -1,7 +1,7 @@
-const AdminAuthServices = require('../services/admin_auth.service');
-const RegisterDTO = require('../common/dtos/auth/register_admin.dto');
-const LoginDTO = require('../common/dtos/auth/login.dto');
-const Admin = require('../db/models/adminModel')
+import AdminAuthServices from '../services/admin_auth.service.js';
+import RegisterDTO from '../common/dtos/auth/register_admin.dto.js';
+import LoginDTO from '../common/dtos/auth/login.dto.js';
+import Admin from '../db/models/adminModel.js';
 
 class AdminAuthController {
   async register(req, res) {
@@ -90,4 +90,4 @@ class AdminAuthController {
   }
 }
 
-module.exports = new AdminAuthController();
+export default new AdminAuthController();

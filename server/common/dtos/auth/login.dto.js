@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-class LoginDTO {
+export class LoginDTO {
   constructor(username_or_email, password) {
     this.username_or_email = username_or_email;
     this.password = password;
@@ -19,4 +19,4 @@ class LoginDTO {
   }
 }
 
-module.exports = LoginDTO;
+export default LoginDTO;

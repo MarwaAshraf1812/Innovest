@@ -1,6 +1,6 @@
-const AdminService = require('../services/admin.service');
-const { CreateAdminDTO } = require('../common/dtos/admin.dto');
-const adminValidationSchema = require('../db/validators/adminValidator');
+import AdminService from '../services/admin.service.js';
+import { CreateAdminDTO } from '../common/dtos/admin.dto.js';
+import adminValidationSchema from '../db/validators/adminValidator.js';
 
 /**
  * AdminController class handles HTTP requests related to admin user management.
@@ -119,4 +119,4 @@ class AdminController {
   }
 }
 
-module.exports = new AdminController();
+export default new AdminController();

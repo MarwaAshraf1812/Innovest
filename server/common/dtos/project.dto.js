@@ -1,6 +1,6 @@
-const path = require('path');
+import path from 'path';
 
-const projectDTO = {
+export const projectDTO = {
     toResponse: (project, isAuthorized = false) => {
         const cleanDocs = (project.documents || []).map(doc => path.basename(doc));
         const response = {
@@ -40,6 +40,6 @@ const projectDTO = {
         deadline: project.deadline,
         documents: (project.documents || []).map(doc => path.basename(doc)),
     })
-}
+};
 
-module.exports = projectDTO;
+export default projectDTO;

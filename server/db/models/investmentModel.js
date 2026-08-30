@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const investmentSchema = new mongoose.Schema({
     proposal_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Proposal', required: true },
@@ -11,4 +11,4 @@ const investmentSchema = new mongoose.Schema({
 
 const Investment = mongoose.model('Investment', investmentSchema);
 
-module.exports = Investment;
+export default Investment;

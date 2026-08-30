@@ -1,4 +1,4 @@
-class CreateCommunityDTO {
+export class CreateCommunityDTO {
     constructor(data) {
         this.community_name = data.community_name;
         this.description = data.description;
@@ -8,7 +8,7 @@ class CreateCommunityDTO {
     }
 }
 
-class UpdateCommunityDTO {
+export class UpdateCommunityDTO {
     constructor(data) {
         this.community_name = data.community_name;
         this.description = data.description;
@@ -18,4 +18,4 @@ class UpdateCommunityDTO {
     }
 }
 
-module.exports = { CreateCommunityDTO, UpdateCommunityDTO };
+export default { CreateCommunityDTO, UpdateCommunityDTO };

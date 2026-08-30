@@ -1,8 +1,8 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const validator = require('validator')
-const Admin = require("../db/models/adminModel");
-const AdminDao = require("../common/daos/admin.dao");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import validator from 'validator'
+import Admin from "../db/models/adminModel.js";
+import AdminDao from "../common/daos/admin.dao.js";
 
 class AdminAuthServices {
     /**
@@ -102,4 +102,4 @@ class AdminAuthServices {
 
 
 
-module.exports = new AdminAuthServices();
+export default new AdminAuthServices();

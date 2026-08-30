@@ -1,10 +1,7 @@
-const { Router } = require('express');
-const messageRoutes = require('../routes/message.routes');
+import { Router } from 'express';
+import messageRoutes from '../routes/message.routes.js';
 
-const messageModule = () => {
-  const router = Router();
-  router.use('/message', messageRoutes);
-  return router;
-};
+const router = Router();
+router.use('/messages', messageRoutes);
 
-module.exports = messageModule;
+export default router;

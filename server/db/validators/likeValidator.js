@@ -1,8 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-
-
-const createlikeValidationSchema = Joi.object({
+export const createlikeValidationSchema = Joi.object({
   like_id: Joi.string().required(),
   content: Joi.string().min(1).max(500).required(),
 
@@ -13,5 +11,4 @@ const createlikeValidationSchema = Joi.object({
 
 });
 
-
-module.exports = { createlikeValidationSchema };
+export default { createlikeValidationSchema };

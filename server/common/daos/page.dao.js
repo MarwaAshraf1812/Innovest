@@ -1,9 +1,9 @@
-const Page = require('../../db/models/pageModel');
-const CommunityPages = require('../../db/models/communityPagesModel');
-const Community = require('../../db/models/communityModel');
-const { validateCreatePage, validateUpdatePage } = require('../../db/validators/pageValidator');
-const { checkMembershipStatus } = require('./community.dao');
-const { User } = require('../../db/models/userModel');
+import Page from '../../db/models/pageModel.js';
+import CommunityPages from '../../db/models/communityPagesModel.js';
+import Community from '../../db/models/communityModel.js';
+import { validateCreatePage, validateUpdatePage } from '../../db/validators/pageValidator.js';
+import communityDao from './community.dao.js';
+import { User } from '../../db/models/userModel.js';
 
 class PageDAO {
   /**
@@ -14,7 +14,7 @@ class PageDAO {
    */
   async createPage(pageData, userId, communityId) {
     try {
-      await checkMembershipStatus(userId, communityId);
+      await communityDao.checkMembershipStatus(userId, communityId);
       const page = new Page({
         ...pageData,
         author: userId,
@@ -70,7 +70,6 @@ class PageDAO {
    */
 async deletePage(pageId, userId, communityId) {
   try {
-    // Ensure page_id is passed as string and matches DB field type
     const deletedPage = await Page.findOneAndDelete({ page_id: String(pageId), author: userId });
     
     if (!deletedPage) {
@@ -130,7 +129,6 @@ async getCommunityPages(communityId) {
     throw new Error('Error getting pages by community: ' + error.message);
   }
 }
-
 
   /**
    * Gets a page by its ID.
@@ -214,7 +212,7 @@ async getCommunityPages(communityId) {
       }
 
       console.log('Successfully approved page:', { communityId, pageId });
-      return updatedCommunityPage; // Return the updated community page entry
+      return updatedCommunityPage;
     } catch (error) {
       throw new Error(`Error approving page to add to community: ${error.message}`);
     }
@@ -323,4 +321,4 @@ async searchPages(searchCriteria) {
   
 }
 
-module.exports = new PageDAO();
+export default new PageDAO();

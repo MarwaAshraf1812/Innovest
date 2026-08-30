@@ -18,4 +18,4 @@ const registerDirectMessageHandlers = (io, socket) => {
   });
 };
 
-module.exports = registerDirectMessageHandlers;
+export default registerDirectMessageHandlers;

@@ -1,5 +1,5 @@
-const LikeController = require('../controllers/like.controller');
-const CommentController = require('../controllers/comment.controller');
+import LikeController from '../controllers/like.controller.js';
+import CommentController from '../controllers/comment.controller.js';
 
 describe('Malformed Parameter Validation Tests', () => {
   it('should return HTTP 400 for malformed page_id on LikeController.toggleLike', async () => {

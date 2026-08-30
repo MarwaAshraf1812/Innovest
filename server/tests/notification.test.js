@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const Notification = require('../db/models/notificationModel');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+import mongoose from 'mongoose';
+import Notification from '../db/models/notificationModel.js';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 describe('Notification Model Test', () => {
   let mongoServer;
@@ -9,10 +9,7 @@ describe('Notification Model Test', () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
 
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(uri);
   });
 
   afterAll(async () => {

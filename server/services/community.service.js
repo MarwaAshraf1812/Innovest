@@ -1,6 +1,5 @@
-const CommunityDAO = require('../common/daos/community.dao');
-const adminDao = require('../common/daos/admin.dao');
-const communityDao = require('../common/daos/community.dao');
+import CommunityDAO from '../common/daos/community.dao.js';
+import adminDao from '../common/daos/admin.dao.js';
 
 class CommunityServices {
   /**
@@ -239,4 +238,4 @@ class CommunityServices {
   }
 }
 
-module.exports = new CommunityServices();
+export default new CommunityServices();
