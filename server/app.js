@@ -1,27 +1,12 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const adminModule = require('./modules/admin.module');
-const userModule = require('./modules/user.module');
-const messageModule = require('./modules/message.module');
-const likeModule = require("./modules/like.module");
-const communityModule = require('./modules/community.module');
-const { dbConection } = require("./config/db");
-const bodyParser = require('body-parser');
-const http = require('http');
-const socketConfig = require('./config/socket');
-const commentModule = require("./modules/comment.module");
-const ProjectModule = require('./modules/project.module');
-const proposalModule = require('./modules/proposal.module');
-const { addUserToPendingUsers, approveUserToJoinCommunity } = require('./controllers/community.controller');
-
-
+const { initSocketServer } = require('./sockets');
+const { apiRateLimiter, authRateLimiter } = require('./middlewares/rateLimiter');
 
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
-const io = socketConfig.init(server);
+
+// Initialize modularized Socket.IO system
+initSocketServer(server);
 
 dbConection();
 
@@ -44,11 +29,15 @@ app.use(cors({
   credentials: true
 }));
 
-
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(require('cookie-parser')());
+
+// Apply Rate Limiters
+app.use('/api/', apiRateLimiter);
+app.use('/api/user/login', authRateLimiter);
+app.use('/api/user/signup', authRateLimiter);
 
 // Routes
 app.use('/api', adminModule());
@@ -59,110 +48,6 @@ app.use('/api', likeModule());
 app.use('/api', commentModule());
 app.use('/api', ProjectModule());
 app.use('/api', proposalModule());
-
-// Socket.IO setup
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  // ── User room registration ────────────────────────────────────────────────
-  socket.on('registerUserSocket', (userId) => {
-    if (userId) {
-      socket.join(userId.toString());
-      console.log(`Socket joined user room: ${userId}`);
-    }
-  });
-
-  // ── Direct messages ───────────────────────────────────────────────────────
-  socket.on('sendMessage', (message) => {
-    if (message && message.receiver_id) {
-      io.to(message.receiver_id.toString()).emit('receiveMessage', message);
-    }
-  });
-
-  /**
-   * Channel: directMessage
-   * Emits a new_notification to the target user's private room.
-   * Payload: { receiverId, notification }
-   */
-  socket.on('notify:directMessage', ({ receiverId, notification } = {}) => {
-    if (receiverId && notification) {
-      io.to(receiverId.toString()).emit('new_notification', {
-        ...notification,
-        channel: 'directMessage',
-      });
-    }
-  });
-
-  // ── Community administrative alerts ──────────────────────────────────────
-  socket.on("joinCommunity", async (communityId, userId) => {
-    try {
-      if (!communityId || !userId || !mongoose.Types.ObjectId.isValid(communityId)) {
-        console.warn(`Invalid joinCommunity payload: communityId=${communityId}, userId=${userId}`);
-        return socket.emit('error', 'Invalid community ID or user ID format.');
-      }
-
-      console.log("Received communityId:", communityId);
-      console.log("Received userId:", userId);
-
-      await addUserToPendingUsers(communityId, userId, socket);
-
-      io.emit("newJoinRequest", { communityId, userId });
-      socket.emit("joinRequestPending", "Your request is pending approval.");
-    } catch (error) {
-      console.error('Error handling join community request:', error);
-      socket.emit('error', 'Something went wrong.');
-    }
-  });
-
-  socket.on("approveJoinRequest", async (communityId, userId) => {
-    try {
-      if (!communityId || !userId || !mongoose.Types.ObjectId.isValid(communityId)) {
-        return socket.emit('error', 'Invalid community ID or user ID format.');
-      }
-
-      await approveUserToJoinCommunity(communityId, userId, socket);
-      io.emit("joinRequestApproved", { communityId, userId });
-      socket.emit("joinRequestApproved", { communityId, userId, message: "User approved successfully." });
-    } catch (error) {
-      console.error('Error handling approve join request:', error);
-      socket.emit('error', 'Something went wrong.');
-    }
-  });
-
-  /**
-   * Channel: communityAlert
-   * Fans out a notification to all members of a community room.
-   * Payload: { communityRoom, notification }
-   */
-  socket.on('notify:communityAlert', ({ communityRoom, notification } = {}) => {
-    if (communityRoom && notification) {
-      io.to(communityRoom.toString()).emit('new_notification', {
-        ...notification,
-        channel: 'communityAlert',
-      });
-    }
-  });
-
-  // ── System-wide announcements ─────────────────────────────────────────────
-  /**
-   * Channel: systemAnnouncement
-   * Broadcasts a platform-wide notification to every connected socket.
-   * Should only be emitted by authorised admin clients.
-   * Payload: { notification }
-   */
-  socket.on('notify:systemAnnouncement', ({ notification } = {}) => {
-    if (notification) {
-      io.emit('new_notification', {
-        ...notification,
-        channel: 'system',
-      });
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
-});
 
 
 // Start the server
