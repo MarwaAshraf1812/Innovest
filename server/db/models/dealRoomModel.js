@@ -41,7 +41,6 @@ const dealRoomSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 dealRoomSchema.index({ project_id: 1, investor_id: 1 });
-dealRoomSchema.index({ deal_room_id: 1 });
 
 const DealRoom = mongoose.models.DealRoom || mongoose.model('DealRoom', dealRoomSchema);
 export default DealRoom;

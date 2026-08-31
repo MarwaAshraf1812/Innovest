@@ -11,7 +11,5 @@ const investorMandateSchema = new mongoose.Schema({
   feature_vector: [{ type: Number }]
 }, { timestamps: true });
 
-investorMandateSchema.index({ investor_id: 1 });
-
 const InvestorMandate = mongoose.models.InvestorMandate || mongoose.model('InvestorMandate', investorMandateSchema);
 export default InvestorMandate;
