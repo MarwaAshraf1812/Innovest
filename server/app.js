@@ -17,6 +17,7 @@ import likeModule from './modules/like.module.js';
 import commentModule from './modules/comment.module.js';
 import ProjectModule from './modules/project.module.js';
 import proposalModule from './modules/proposal.module.js';
+import vdrRoutes from './routes/vdr.routes.js';
 
 dotenv.config();
 const app = express();
@@ -65,6 +66,7 @@ app.use('/api', likeModule);
 app.use('/api', commentModule);
 app.use('/api', ProjectModule);
 app.use('/api', proposalModule);
+app.use('/api/vdr', vdrRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 8000;
