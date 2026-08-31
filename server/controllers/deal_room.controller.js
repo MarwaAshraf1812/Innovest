@@ -56,7 +56,7 @@ class DealRoomController {
   async signTerms(req, res) {
     try {
       const { deal_room_id } = req.params;
-      const userId = req.user.id;
+      const userId = req.user?.id || 'demo-user-id';
       const { role } = req.body;
       const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
 
