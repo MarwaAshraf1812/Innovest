@@ -8,6 +8,7 @@ import ExplorePage from '../pages/explore'
 import CommunitiesPage from '../pages/communities'
 import ProposalsPage from '../pages/proposals'
 import DashboardPage from '../pages/dashboard'
+import VdrDashboard from '../pages/VdrDashboard'
 import NotFoundPage from '../pages/NotFoundPage'
 
 // Helper wrapper to extract profile ID parameter
@@ -127,6 +128,10 @@ export default function AppRoutes() {
             <Navigate to="/login" replace />
           )
         }
+      />
+      <Route
+        path="/vdr"
+        element={<VdrDashboard />}
       />
       <Route
         path="/dashboard"
