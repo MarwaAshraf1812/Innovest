@@ -152,6 +152,8 @@ async function runSeed() {
       password: userPw,
       role: 'ENTREPRENEUR',
       country: 'Egypt',
+      is_verified: true,
+      is_active: true,
       user_background: `${e.field} entrepreneur`,
       experience: `Founder & CEO of ${e.company}. Scaling modern ${e.field} infrastructure across MENA.`
     });
@@ -169,6 +171,8 @@ async function runSeed() {
       password: userPw,
       role: 'INVESTOR',
       country: 'Egypt',
+      is_verified: true,
+      is_active: true,
       user_background: inv.type,
       experience: `Active investment firm targeting high-yield MENA technology startups.`
     });
