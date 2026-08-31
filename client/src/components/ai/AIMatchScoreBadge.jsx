@@ -1,26 +1,55 @@
 import React from 'react';
-import { Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
-export default function AIMatchScoreBadge({ score = 92, highlights = [] }) {
-  const getScoreColor = (s) => {
-    if (s >= 85) return 'from-emerald-500 to-teal-400 text-emerald-300 border-emerald-500/40 bg-emerald-950/60 shadow-emerald-500/20';
-    if (s >= 60) return 'from-amber-500 to-yellow-400 text-amber-300 border-amber-500/40 bg-amber-950/60 shadow-amber-500/20';
-    return 'from-red-500 to-pink-500 text-red-300 border-red-500/40 bg-red-950/60';
+export default function AIMatchScoreBadge({ score = 85, explanation = [] }) {
+  const getScoreVariant = (val) => {
+    if (val >= 85) {
+      return {
+        badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        barBg: 'bg-emerald-500',
+        label: 'High Match'
+      };
+    }
+    if (val >= 65) {
+      return {
+        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+        barBg: 'bg-amber-500',
+        label: 'Moderate Match'
+      };
+    }
+    return {
+      badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
+      barBg: 'bg-slate-400',
+      label: 'Low Match'
+    };
   };
 
+  const style = getScoreVariant(score);
+
   return (
-    <div className="space-y-3">
-      <div className={`inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border text-xs font-mono font-extrabold shadow-lg backdrop-blur-md bg-gradient-to-r ${getScoreColor(score)}`}>
-        <Sparkles className="w-4 h-4 animate-pulse text-amber-300" />
-        <span>{score}% AI MATCH SCORE</span>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className={`px-3 py-1 rounded-full border ${style.badgeBg} text-xs font-extrabold flex items-center gap-1.5 shadow-sm`}>
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>{score}% AI Match</span>
+          <span className="opacity-75">• {style.label}</span>
+        </div>
       </div>
 
-      {highlights.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {highlights.map((item, idx) => (
-            <span key={idx} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-800/80 border border-slate-700 rounded-lg text-slate-300 text-xs font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              {item}
+      {/* Score Progress Bar */}
+      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
+        <div
+          className={`h-full ${style.barBg} transition-all duration-700 rounded-full`}
+          style={{ width: `${Math.min(Math.max(score, 5), 100)}%` }}
+        />
+      </div>
+
+      {/* Explanation Chips */}
+      {explanation.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {explanation.map((item, idx) => (
+            <span key={idx} className="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md border border-slate-200">
+              ✓ {item}
             </span>
           ))}
         </div>

@@ -23,6 +23,11 @@ import ExploreInvestorsView  from '../features/dashboard/components/ExploreInves
 import UserProfileView from '../features/dashboard/components/UserProfileView'
 import EventsView from '../features/events/components/EventsView'
 
+// Advanced Innovation Views
+import VdrDashboard from './VdrDashboard'
+import InvestorDealFlowPage from './InvestorDealFlowPage'
+import DealRoomPage from './DealRoomPage'
+
 // RBAC Hook
 import useAuthRole from '../features/admin/hooks/useAuthRole'
 
@@ -159,6 +164,9 @@ export default function DashboardPage({ onNavigate, currentUser, onLogout, initi
       'explore-investors': <ExploreInvestorsView onViewProfile={handleViewUserProfile} />,
       'explore-pitches'  : <ExplorePitchesView onViewProfile={handleViewUserProfile} />,
       'my-investments'   : <InvestorInvestmentsView onViewProfile={handleViewUserProfile} />,
+      'vdr'              : <VdrDashboard currentUser={currentUser} />,
+      'deal-flow'        : <InvestorDealFlowPage currentUser={currentUser} />,
+      'deal-room'        : <DealRoomPage currentUser={currentUser} />,
     }
     return views[activeTab] ?? (isStaff ? <AdminDashboardView /> : <MemberDashboardView currentUser={currentUser} onNavigate={onNavigate} onLogout={onLogout} onViewProfile={handleViewUserProfile} />)
   }

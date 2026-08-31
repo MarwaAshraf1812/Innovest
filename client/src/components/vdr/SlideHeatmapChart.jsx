@@ -1,67 +1,70 @@
 import React from 'react';
-import { Flame, Clock, Eye, AlertTriangle } from 'lucide-react';
+import { Flame, Clock, BarChart3 } from 'lucide-react';
 
-export default function SlideHeatmapChart({ analyticsData }) {
-  const pageViews = analyticsData?.page_views || [
-    { page_number: 1, duration_seconds: 20, view_count: 4 },
-    { page_number: 2, duration_seconds: 45, view_count: 6 },
-    { page_number: 3, duration_seconds: 140, view_count: 12 }, // Financials Peak!
-    { page_number: 4, duration_seconds: 55, view_count: 5 },
-    { page_number: 5, duration_seconds: 30, view_count: 3 }
+export default function SlideHeatmapChart({ heatmapData = [] }) {
+  const defaultData = [
+    { slide_number: 1, total_duration_seconds: 45 },
+    { slide_number: 2, total_duration_seconds: 120 },
+    { slide_number: 3, total_duration_seconds: 240 },
+    { slide_number: 4, total_duration_seconds: 90 },
+    { slide_number: 5, total_duration_seconds: 300 },
+    { slide_number: 6, total_duration_seconds: 60 },
+    { slide_number: 7, total_duration_seconds: 180 },
+    { slide_number: 8, total_duration_seconds: 210 }
   ];
 
-  const maxDuration = Math.max(...pageViews.map((p) => p.duration_seconds), 1);
+  const data = heatmapData.length > 0 ? heatmapData : defaultData;
+  const maxDuration = Math.max(...data.map((d) => d.total_duration_seconds || 1));
+
+  const getHeatmapColor = (duration) => {
+    const ratio = duration / maxDuration;
+    if (ratio > 0.75) return { bg: 'bg-rose-500', badge: 'bg-rose-50 text-rose-700 border-rose-200' };
+    if (ratio > 0.45) return { bg: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200' };
+    return { bg: 'bg-primary-500', badge: 'bg-primary-50 text-primary-700 border-primary-200' };
+  };
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-xl text-white">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm text-slate-900 space-y-6">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20 text-amber-400">
+          <div className="p-2.5 bg-primary-50 rounded-xl border border-primary-100 text-primary-600">
             <Flame className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-100">Pitch Deck Slide Heatmap Analytics</h3>
-            <p className="text-xs text-slate-400">Slide-by-slide investor duration and engagement intensity</p>
+            <h3 className="font-extrabold text-slate-900 text-base">Investor Engagement Heatmap</h3>
+            <p className="text-xs text-slate-500">Aggregate view time per slide across all investor sessions.</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
-          <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-emerald-400" /> Total Time: {analyticsData?.total_duration_seconds || 290}s</span>
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <BarChart3 className="w-4 h-4 text-primary-600" /> Real-time Analytics
         </div>
       </div>
 
-      {/* Heatmap Bars Grid */}
-      <div className="space-y-4">
-        {pageViews.map((pv) => {
-          const percent = Math.round((pv.duration_seconds / maxDuration) * 100);
-          const isHot = percent >= 80;
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {data.map((item) => {
+          const heightPercent = Math.max(Math.round((item.total_duration_seconds / maxDuration) * 100), 15);
+          const colors = getHeatmapColor(item.total_duration_seconds);
 
           return (
-            <div key={pv.page_number} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-slate-300 flex items-center gap-2">
-                  Slide 0{pv.page_number}
-                  {pv.page_number === 3 && (
-                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-[10px] font-semibold">
-                      🔥 Financials Peak (Most Reviewed)
-                    </span>
-                  )}
-                </span>
-                <span className="text-slate-400 font-medium">
-                  {pv.duration_seconds} seconds ({pv.view_count} views)
+            <div key={item.slide_number} className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 space-y-3 flex flex-col justify-between">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-700">Slide #{item.slide_number}</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${colors.badge}`}>
+                  {item.total_duration_seconds}s
                 </span>
               </div>
 
-              {/* Progress Bar */}
-              <div className="h-3 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800/80 p-0.5">
+              {/* Bar Visual Indicator */}
+              <div className="h-20 bg-slate-200/60 rounded-lg flex items-end overflow-hidden p-1">
                 <div
-                  style={{ width: `${percent}%` }}
-                  className={`h-full rounded-full transition-all duration-700 ${
-                    isHot
-                      ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 shadow-lg shadow-orange-500/30'
-                      : 'bg-gradient-to-r from-emerald-500 to-teal-400'
-                  }`}
+                  style={{ height: `${heightPercent}%` }}
+                  className={`w-full ${colors.bg} rounded-md transition-all duration-500 shadow-sm`}
                 />
+              </div>
+
+              <div className="flex items-center gap-1 text-[10px] text-slate-500 font-mono">
+                <Clock className="w-3 h-3 text-slate-400" /> {(item.total_duration_seconds / 60).toFixed(1)} mins total
               </div>
             </div>
           );

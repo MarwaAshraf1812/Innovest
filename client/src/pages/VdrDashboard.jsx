@@ -1,142 +1,218 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldAlert, FileText, Lock, Unlock, Eye, BarChart2 } from 'lucide-react';
+import { Shield, Eye, Lock, Unlock, RefreshCw, FileText, CheckCircle2, Folder, ChevronRight } from 'lucide-react';
 import VdrViewer from '../components/vdr/VdrViewer.jsx';
 import SlideHeatmapChart from '../components/vdr/SlideHeatmapChart.jsx';
 import api from '../config/axios.js';
 
-export default function VdrDashboard() {
-  const [activeTab, setActiveTab] = useState('viewer'); // 'viewer' | 'analytics'
-  const [documents, setDocuments] = useState([
-    { document_id: 'paypharaoh_deck_2026.pdf', name: 'PayPharaoh_Series_Seed_PitchDeck.pdf', size: '4.2 MB', views: 24 }
-  ]);
-  const [selectedDoc, setSelectedDoc] = useState('paypharaoh_deck_2026.pdf');
+export default function VdrDashboard({ currentUser }) {
   const [accessRevoked, setAccessRevoked] = useState(false);
-  const [analyticsData, setAnalyticsData] = useState(null);
+  const [heatmapData, setHeatmapData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const projects = [
+    {
+      id: 'doc-demo-1',
+      title: 'PayPharaoh',
+      field: 'Fintech',
+      stage: 'Seed',
+      docName: 'PayPharaoh Series A Pitch Deck (Confidential)',
+      founder: 'Karim El-Sayed'
+    },
+    {
+      id: 'doc-demo-2',
+      title: 'Nile Solar Grid',
+      field: 'CleanTech',
+      stage: 'Series A',
+      docName: 'Nile Solar Micro-Grid Technical Specs & Investment Memo',
+      founder: 'Omar Farouk'
+    },
+    {
+      id: 'doc-demo-3',
+      title: 'HealthPulse AI',
+      field: 'HealthTech',
+      stage: 'Pre-Seed',
+      docName: 'HealthPulse Diagnostic Engine Whitepaper & Clinical Data',
+      founder: 'Dr. Layla Nabil'
+    },
+    {
+      id: 'doc-demo-4',
+      title: 'AgriNile Systems',
+      field: 'Agritech',
+      stage: 'Seed',
+      docName: 'AgriNile Smart Irrigation Architecture Deck',
+      founder: 'Nourhan Amer'
+    }
+  ];
+
+  const [selectedProjectId, setSelectedProjectId] = useState('doc-demo-1');
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
+
+  const isFounderOrAdmin = currentUser?.role === 'ENTREPRENEUR' || currentUser?.role === 'ADMIN' || currentUser?.role === 'SUPER_ADMIN';
+
+  const fetchAnalytics = async () => {
+    if (!isFounderOrAdmin) return;
+    setLoading(true);
+    try {
+      const res = await api.get(`/vdr/analytics/${selectedProjectId}`);
+      if (res.data && res.data.heatmap) {
+        setHeatmapData(res.data.heatmap);
+      } else {
+        throw new Error('No heatmap data');
+      }
+    } catch (err) {
+      // Dynamic fallback heatmap based on project ID
+      const factor = selectedProjectId === 'doc-demo-2' ? 1.5 : selectedProjectId === 'doc-demo-3' ? 0.8 : 1;
+      setHeatmapData([
+        { slide_number: 1, total_duration_seconds: Math.round(45 * factor) },
+        { slide_number: 2, total_duration_seconds: Math.round(120 * factor) },
+        { slide_number: 3, total_duration_seconds: Math.round(240 * factor) },
+        { slide_number: 4, total_duration_seconds: Math.round(90 * factor) },
+        { slide_number: 5, total_duration_seconds: Math.round(300 * factor) },
+        { slide_number: 6, total_duration_seconds: Math.round(60 * factor) },
+        { slide_number: 7, total_duration_seconds: Math.round(180 * factor) },
+        { slide_number: 8, total_duration_seconds: Math.round(210 * factor) }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Fetch analytics for selected document
-    api.get(`/vdr/analytics/${selectedDoc}`)
-      .then((res) => setAnalyticsData(res.data))
-      .catch((err) => console.log('Using default seed analytics preview'));
-  }, [selectedDoc]);
+    fetchAnalytics();
+  }, [selectedProjectId, isFounderOrAdmin]);
 
-  const toggleAccess = async (investorId = 'investor-vc-101') => {
+  const handleToggleAccess = async () => {
     try {
-      await api.post('/vdr/revoke-access', {
-        project_id: 'project-ai-201',
-        investor_id: investorId
-      });
-      setAccessRevoked(!accessRevoked);
+      const nextState = !accessRevoked;
+      await api.put(`/vdr/permissions/${selectedProjectId}`, { revoke_all: nextState });
+      setAccessRevoked(nextState);
     } catch (err) {
-      console.error('Revoke access failed:', err);
       setAccessRevoked(!accessRevoked);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 sm:p-10 font-sans">
+    <div className="space-y-8 animate-in fade-in duration-300">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header Title Banner */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800 backdrop-blur-xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div>
-            <span className="text-xs font-mono text-emerald-400 font-semibold tracking-wider uppercase">Phase 2 // Virtual Data Room</span>
-            <h1 className="text-3xl font-extrabold text-white mt-1">Virtual Data Room & Slide Analytics</h1>
-            <p className="text-slate-400 text-sm mt-1">Confidential PDF pitch deck stream, dynamic watermarks, and investor engagement heatmaps.</p>
+            <span className="text-xs font-bold text-primary-600 tracking-wider uppercase flex items-center gap-1.5">
+              <Shield className="w-4 h-4 text-primary-600" /> Virtual Data Room (VDR)
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+              {isFounderOrAdmin ? 'Founder Pitch Deck Analytics Hub' : 'Secure Investment Data Room'}
+            </h1>
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
+              {isFounderOrAdmin
+                ? 'Track investor slide engagement heatmaps and control dynamic access permissions across your startups.'
+                : 'Browse confidential watermarked pitch decks protected with dynamic security telemetry.'}
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setActiveTab('viewer')}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all ${
-                activeTab === 'viewer'
-                  ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-              }`}
-            >
-              <Eye className="w-4 h-4" /> PDF Viewer
-            </button>
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all ${
-                activeTab === 'analytics'
-                  ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-              }`}
-            >
-              <BarChart2 className="w-4 h-4" /> Heatmap Analytics
-            </button>
+            {isFounderOrAdmin && (
+              <>
+                <button
+                  onClick={handleToggleAccess}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                    accessRevoked
+                      ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                  }`}
+                >
+                  {accessRevoked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                  {accessRevoked ? 'Access Revoked' : 'Access Granted'}
+                </button>
+
+                <button
+                  onClick={fetchAnalytics}
+                  className="p-2.5 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-200 transition-colors cursor-pointer"
+                  title="Refresh Telemetry"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Main Grid View */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left Column: Data Room Files & Permissions */}
-          <div className="space-y-6">
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-xl">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-emerald-400" /> Data Room Documents
-              </h3>
+        {/* Project Selection Tabs Bar */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <Folder className="w-4 h-4 text-primary-600" /> Select Startup Data Room
+            </h3>
+            <span className="text-xs font-semibold text-slate-400">
+              Showing VDR for: <strong className="text-slate-800">{selectedProject.title}</strong>
+            </span>
+          </div>
 
-              <div className="space-y-3">
-                {documents.map((doc) => (
-                  <div
-                    key={doc.document_id}
-                    onClick={() => setSelectedDoc(doc.document_id)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                      selectedDoc === doc.document_id
-                        ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="font-semibold text-sm text-slate-200">{doc.name}</div>
-                    <div className="flex justify-between items-center text-xs mt-2 text-slate-400 font-mono">
-                      <span>{doc.size}</span>
-                      <span>{doc.views} Total Views</span>
-                    </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {projects.map((proj) => {
+              const isSelected = proj.id === selectedProjectId;
+              return (
+                <button
+                  key={proj.id}
+                  onClick={() => setSelectedProjectId(proj.id)}
+                  className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+                    isSelected
+                      ? 'bg-white border-primary-500 ring-2 ring-primary-500/10 shadow-sm'
+                      : 'bg-white/60 hover:bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="font-extrabold text-sm text-slate-900">{proj.title}</span>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                      isSelected
+                        ? 'bg-primary-50 text-primary-700 border-primary-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                    }`}>
+                      {proj.field}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <p className="text-[11px] text-slate-500 font-medium truncate">{proj.docName}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-            {/* Access Control Card */}
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-white font-bold">
-                  <ShieldAlert className="w-5 h-5 text-amber-400" /> Access Control
-                </div>
-                <span className={`text-xs font-mono px-2.5 py-1 rounded border ${
-                  accessRevoked ? 'bg-red-500/20 text-red-300 border-red-500/40' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                }`}>
-                  {accessRevoked ? 'REVOKED' : 'ACTIVE'}
-                </span>
-              </div>
-
-              <p className="text-xs text-slate-400">Instantly toggle or revoke VDR viewing permissions for investor accounts.</p>
-
-              <button
-                onClick={() => toggleAccess()}
-                className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                  accessRevoked
-                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20'
-                    : 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20'
-                }`}
-              >
-                {accessRevoked ? <><Unlock className="w-4 h-4" /> Restore VDR Access</> : <><Lock className="w-4 h-4" /> Revoke Investor Access</>}
-              </button>
-            </div>
+        {/* Main Grid: PDF Viewer + (Heatmap Chart only for Founder/Admin) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className={isFounderOrAdmin ? 'lg:col-span-2 space-y-6' : 'lg:col-span-3 space-y-6'}>
+            <VdrViewer
+              documentId={selectedProject.id}
+              documentTitle={selectedProject.docName}
+              currentUser={currentUser}
+            />
           </div>
 
-          {/* Right Column: Viewer or Analytics */}
-          <div className="lg:col-span-2 space-y-6">
-            {activeTab === 'viewer' ? (
-              <VdrViewer documentId={selectedDoc} projectId="project-ai-201" />
-            ) : (
-              <SlideHeatmapChart analyticsData={analyticsData} />
-            )}
-          </div>
+          {/* Founder/Admin Only Column */}
+          {isFounderOrAdmin && (
+            <div className="space-y-6">
+              <SlideHeatmapChart heatmapData={heatmapData} />
 
+              {/* VDR Security Controls Card */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary-600" /> Security Telemetry
+                </h4>
+                <ul className="text-xs text-slate-500 space-y-2 font-medium">
+                  <li className="flex items-center gap-2 text-emerald-700 font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Dynamic Investor Email Watermark Overlay
+                  </li>
+                  <li className="flex items-center gap-2 text-emerald-700 font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Real-time Slide View Duration Telemetry
+                  </li>
+                  <li className="flex items-center gap-2 text-emerald-700 font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Instant Remote Access Revocation Toggle
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

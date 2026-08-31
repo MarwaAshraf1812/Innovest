@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
   LayoutDashboard, ShieldCheck, Users, Globe,
-  Settings, Mail, FolderOpen, Search, Briefcase, X, TrendingUp, CalendarDays
+  Settings, Mail, FolderOpen, Search, Briefcase, X, TrendingUp, CalendarDays, Eye, Sparkles
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { API_URL } from '../../../config/api'
 import useAuthRole from '../hooks/useAuthRole'
 import { LogoIcon } from '../../../components/shared/Logo'
@@ -11,6 +12,9 @@ import { LogoIcon } from '../../../components/shared/Logo'
 const MENU = {
   ADMIN: [
     { id: 'dashboard',  label: 'Dashboard',       icon: LayoutDashboard },
+    { id: 'vdr',        label: 'Virtual Data Room', icon: Eye },
+    { id: 'deal-flow',  label: 'AI Deal Flow',  icon: Sparkles },
+    { id: 'deal-room', label: 'Live Deal Room', icon: Briefcase },
     { id: 'sub-admins', label: 'Sub-Admins',       icon: ShieldCheck },
     { id: 'members',    label: 'Members',          icon: Users },
     { id: 'communities',label: 'Communities',      icon: Globe },
@@ -20,6 +24,9 @@ const MENU = {
   ],
   INVESTOR: [
     { id: 'dashboard',       label: 'Dashboard',        icon: LayoutDashboard },
+    { id: 'deal-flow',       label: 'AI Deal Flow',   icon: Sparkles },
+    { id: 'vdr',             label: 'Virtual Data Room', icon: Eye },
+    { id: 'deal-room-nav',   label: 'Live Deal Room', icon: Briefcase },
     { id: 'explore-pitches', label: 'Explore Pitches',  icon: Search },
     { id: 'my-investments',  label: 'My Investments',   icon: Briefcase },
     { id: 'communities',     label: 'Communities',      icon: Globe },
@@ -29,6 +36,8 @@ const MENU = {
   ],
   ENTREPRENEUR: [
     { id: 'dashboard',        label: 'Dashboard',         icon: LayoutDashboard },
+    { id: 'vdr',              label: 'Virtual Data Room', icon: Eye },
+    { id: 'deal-room-nav',    label: 'Live Deal Room', icon: Briefcase },
     { id: 'my-pitches',       label: 'My Pitches',        icon: FolderOpen },
     { id: 'explore-investors',label: 'Explore Investors', icon: TrendingUp },
     { id: 'communities',      label: 'Communities',       icon: Globe },
@@ -48,6 +57,7 @@ const PORTAL_LABEL = {
 
 export default function AdminSidebar({ activeTab, setActiveTab, currentUser, sidebarOpen, setSidebarOpen }) {
   const { role, isSuperAdmin, isStaff } = useAuthRole()
+  const navigate = useNavigate()
   
   const menuKey = isSuperAdmin ? 'ADMIN' : (isStaff ? 'ADMIN' : role)
   let items = MENU[menuKey] || MENU.ENTREPRENEUR
@@ -55,6 +65,11 @@ export default function AdminSidebar({ activeTab, setActiveTab, currentUser, sid
   // Strict RBAC: hide sub-admins tab entirely from Admins and Sub-Admins
   if (!isSuperAdmin) {
     items = items.filter(item => item.id !== 'sub-admins')
+  }
+
+  const handleNavClick = (id) => {
+    setActiveTab(id)
+    setSidebarOpen(false)
   }
 
   const [joinedCommunities, setJoinedCommunities] = useState([])
@@ -126,7 +141,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, currentUser, sid
             return (
               <button
                 key={id}
-                onClick={() => setActiveTab(id)}
+                onClick={() => handleNavClick(id)}
                 className={[
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
                   'transition-all duration-150 cursor-pointer border-none text-left',

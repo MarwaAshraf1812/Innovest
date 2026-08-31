@@ -1,157 +1,125 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Eye, Lock, ChevronLeft, ChevronRight, Download, RefreshCw } from 'lucide-react';
+import { Eye, Shield, Lock, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import api from '../../config/axios.js';
 
-export default function VdrViewer({ documentId, projectId, investorEmail = 'investor@vc.com' }) {
+export default function VdrViewer({ documentId, documentTitle, pdfUrl, currentUser }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages] = useState(10);
-  const [duration, setDuration] = useState(0);
-  const [watermarkedPdfUrl, setWatermarkedPdfUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [revoked, setRevoked] = useState(false);
+  const [totalPages, setTotalPages] = useState(12);
+  const [isAccessRevoked, setIsAccessRevoked] = useState(false);
+  const [startTime, setStartTime] = useState(Date.now());
+
+  const watermarkText = `${currentUser?.email || 'CONFIDENTIAL'} • ${new Date().toLocaleDateString()}`;
 
   useEffect(() => {
-    let timer;
-    if (!revoked) {
-      timer = setInterval(() => {
-        setDuration((prev) => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [revoked, currentPage]);
-
-  // Track slide view duration heartbeat on page change
-  useEffect(() => {
-    if (duration > 0) {
-      api.post('/vdr/track-view', {
-        document_id: documentId,
-        project_id: projectId,
-        page_number: currentPage,
-        duration_seconds: duration
-      }).catch((err) => {
-        if (err.response && err.response.status === 403) {
-          setRevoked(true);
-        }
-      });
-      setDuration(0);
-    }
-  }, [currentPage]);
-
-  const loadWatermarkedDeck = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get(`/vdr/watermark/${documentId}`, { responseType: 'blob' });
-      const url = URL.createObjectURL(res.data);
-      setWatermarkedPdfUrl(url);
-      setRevoked(false);
-    } catch (err) {
-      console.error('Failed to load VDR deck:', err);
-      if (err.response && err.response.status === 403) {
-        setRevoked(true);
+    setStartTime(Date.now());
+    const interval = setInterval(() => {
+      const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+      if (durationSeconds > 0 && !isAccessRevoked) {
+        api.post('/vdr/track-view', {
+          document_id: documentId || 'doc-demo-1',
+          slide_number: currentPage,
+          duration_seconds: 2
+        }).catch((err) => {
+          if (err.response && err.response.status === 403) {
+            setIsAccessRevoked(true);
+          }
+        });
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 2000);
 
-  useEffect(() => {
-    if (documentId) {
-      loadWatermarkedDeck();
-    }
-  }, [documentId]);
+    return () => clearInterval(interval);
+  }, [currentPage, documentId, isAccessRevoked]);
 
-  if (revoked) {
+  if (isAccessRevoked) {
     return (
-      <div className="bg-red-950/40 border border-red-500/40 rounded-2xl p-8 text-center backdrop-blur-xl">
-        <Lock className="w-12 h-12 text-red-400 mx-auto mb-4 animate-bounce" />
-        <h3 className="text-xl font-bold text-red-200">Access Revoked</h3>
-        <p className="text-red-400/80 text-sm mt-2">The founder has revoked access to this confidential data room document.</p>
+      <div className="flex flex-col items-center justify-center p-12 bg-rose-50 border border-rose-200 rounded-2xl text-center space-y-4">
+        <div className="p-4 bg-rose-100 rounded-full text-rose-600">
+          <Lock className="w-8 h-8" />
+        </div>
+        <h3 className="text-xl font-bold text-slate-900">Document Access Revoked</h3>
+        <p className="text-sm text-slate-600 max-w-md">
+          The founder has modified access permissions for this Virtual Data Room document. Contact the project administrator to request access.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-xl text-white">
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden text-slate-900">
       {/* Header Bar */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+      <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-emerald-400">
+          <div className="p-2 bg-primary-50 rounded-xl text-primary-600 border border-primary-100">
             <Shield className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-semibold text-slate-100">Protected VDR Deck Viewer</h4>
-            <span className="text-xs text-slate-400 flex items-center gap-1">
-              <Eye className="w-3.5 h-3.5 text-emerald-400" /> Active Tracking & Dynamic Watermarking
-            </span>
+            <h3 className="font-bold text-slate-900 text-sm">{documentTitle || 'Series A Pitch Deck (Confidential)'}</h3>
+            <p className="text-xs text-slate-500 flex items-center gap-1">
+              <Eye className="w-3.5 h-3.5 text-primary-600" /> Dynamic Telemetry Active
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs font-mono bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 text-slate-300">
+          <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200">
             Page {currentPage} of {totalPages}
           </span>
-          <button
-            onClick={loadWatermarkedDeck}
-            className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
-            title="Refresh Watermarked Stream"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
         </div>
       </div>
 
-      {/* PDF Viewport with Overlay */}
-      <div className="relative aspect-[16/9] bg-slate-950 rounded-xl border border-slate-800/80 overflow-hidden flex items-center justify-center group">
-        {/* Dynamic Watermark Banner */}
-        <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center rotate-[-25deg] opacity-25 select-none">
-          <div className="text-center font-mono text-emerald-400 font-black tracking-widest text-lg sm:text-2xl border-2 border-dashed border-emerald-400 p-4 rounded-xl">
-            CONFIDENTIAL • INNOVEST VDR<br />
-            PREPARED FOR: {investorEmail.toUpperCase()}<br />
-            ID: {documentId}
-          </div>
+      {/* PDF View Canvas with Watermark */}
+      <div className="relative min-h-[420px] bg-slate-100 flex items-center justify-center p-8 select-none overflow-hidden">
+        {/* Dynamic Non-Intrusive Watermark */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-15 rotate-[-25deg] text-slate-900 font-mono text-sm sm:text-base font-extrabold tracking-widest uppercase z-10 whitespace-nowrap">
+          {watermarkText} • FOR YOUR EYES ONLY • {watermarkText}
         </div>
 
-        {/* Slide Content Mockup */}
-        <div className="w-full h-full p-8 flex flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950/30">
-          <div className="flex justify-between items-center text-xs font-mono text-emerald-400">
-            <span>SLIDE 0{currentPage} // MARKET & FINANCIAL PROJECTIONS</span>
-            <span className="px-2.5 py-0.5 bg-emerald-500/20 rounded border border-emerald-500/30">VDR SECURE STREAM</span>
+        {/* PDF Slide Placeholder Card */}
+        <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg border border-slate-200 p-8 sm:p-12 space-y-6 relative z-0 min-h-[300px] flex flex-col justify-between">
+          <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+            <span className="text-xs font-bold text-primary-600 uppercase tracking-widest">SLIDE {currentPage}</span>
+            <span className="text-xs text-slate-400 font-mono">PayPharaoh Inc.</span>
           </div>
 
-          <div className="my-auto text-center space-y-4">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-emerald-300">
-              {currentPage === 1 && "PayPharaoh Series Seed Pitch Deck"}
-              {currentPage === 2 && "Market Opportunity & TAM ($12B MENA Payments)"}
-              {currentPage === 3 && "Unit Economics & Financial Heatmap Projections"}
-              {currentPage === 4 && "Go-To-Market & Traction Highlights"}
-              {currentPage > 4 && `Executive Presentation Slide ${currentPage}`}
-            </h2>
-            <p className="text-slate-400 max-w-xl mx-auto text-sm">
-              Proprietary financial model and proprietary distribution algorithms. Download and unauthorized distribution strictly prohibited under NDA terms.
+          <div className="space-y-3 py-6 text-center">
+            <h4 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+              {currentPage === 1 ? 'Market Opportunity & Unit Economics' :
+               currentPage === 2 ? 'TAM / SAM / SOM Expansion in MENA' :
+               currentPage === 3 ? 'Financial Projections & Recurring Revenue' :
+               `Executive Overview - Slide ${currentPage}`}
+            </h4>
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-lg mx-auto">
+              Real-time telemetry records slide view duration to generate founder heatmap engagement insights.
             </p>
           </div>
 
-          <div className="flex justify-between text-xs text-slate-500 font-mono">
-            <span>Time on Current Slide: {duration}s</span>
-            <span>Watermark Hash: {documentId?.slice(0, 12)}...</span>
+          <div className="flex justify-between items-center text-[10px] text-slate-400 font-mono pt-4 border-t border-slate-100">
+            <span>Watermarked for {currentUser?.email || 'Investor'}</span>
+            <span>SECURE VDR LAYER v2.4</span>
           </div>
         </div>
+      </div>
 
-        {/* Navigation Overlays */}
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center px-6 py-3.5 border-t border-slate-100 bg-white">
         <button
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          className="absolute left-4 p-3 bg-slate-900/80 hover:bg-slate-800 disabled:opacity-30 rounded-full text-white backdrop-blur-md border border-slate-700 transition-all z-30"
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          className="px-4 py-2 bg-white hover:bg-slate-50 disabled:opacity-40 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 flex items-center gap-1 transition-all cursor-pointer"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" /> Previous
         </button>
+
+        <span className="text-xs text-slate-500 font-semibold">
+          Slide {currentPage} of {totalPages}
+        </span>
 
         <button
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          className="absolute right-4 p-3 bg-slate-900/80 hover:bg-slate-800 disabled:opacity-30 rounded-full text-white backdrop-blur-md border border-slate-700 transition-all z-30"
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white disabled:opacity-40 text-xs font-bold rounded-xl flex items-center gap-1 shadow-sm transition-all cursor-pointer"
         >
-          <ChevronRight className="w-5 h-5" />
+          Next <ChevronRight className="w-4 h-4" />
         </button>
       </div>
     </div>
