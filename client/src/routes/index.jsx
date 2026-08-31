@@ -9,6 +9,7 @@ import CommunitiesPage from '../pages/communities'
 import ProposalsPage from '../pages/proposals'
 import DashboardPage from '../pages/dashboard'
 import VdrDashboard from '../pages/VdrDashboard'
+import InvestorDealFlowPage from '../pages/InvestorDealFlowPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
 // Helper wrapper to extract profile ID parameter
@@ -132,6 +133,10 @@ export default function AppRoutes() {
       <Route
         path="/vdr"
         element={<VdrDashboard />}
+      />
+      <Route
+        path="/deal-flow"
+        element={<InvestorDealFlowPage />}
       />
       <Route
         path="/dashboard"
