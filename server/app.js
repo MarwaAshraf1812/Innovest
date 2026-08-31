@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 
-import dbConection from './db/config/dbConnection.js';
+import { dbConection } from './config/db.js';
 import { initSocketServer } from './sockets/index.js';
 import { apiRateLimiter, authRateLimiter } from './middlewares/rateLimiter.js';
 
